@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: venda_certa
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  sales-api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mysql+pymysql://user:password@db:3306/venda_certa
+    command: uvicorn sales_api:app --host 0.0.0.0 --port 8000
+
+  predict-api:
+    build: ./api
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+      - sales-api
+    environment:
+      - DATABASE_URL=mysql+pymysql://user:password@db:3306/venda_certa
+      - SALES_API_URL=http://sales-api:8000
+    command: uvicorn predict_api:app --host 0.0.0.0 --port 8001
+
+volumes:
+  mysql_data:
