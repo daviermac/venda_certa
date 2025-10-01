@@ -22,7 +22,12 @@ Sistema de previsão de vendas sazonais para apoio à decisão de estoque e plan
 
 1. Configurar ambiente virtual e instalar dependências:
    ```
-   setup_env.bat
+   python -m venv venv
+
+   venv\Scripts\activate.bat
+
+   pip install -r requirements.txt
+
    ```
 
 2. Configurar banco MySQL e ajustar variáveis de ambiente.

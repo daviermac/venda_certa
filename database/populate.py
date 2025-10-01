@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Product, Sale
 
-# Configurar conexão com MySQL 
+# Configurar conexão com MySQL usuario e senha
 DATABASE_URL = "mysql+pymysql://davi:1910@localhost/venda_certa"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
