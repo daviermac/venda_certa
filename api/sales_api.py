@@ -5,7 +5,7 @@ from database.models import Base, Product, Sale
 from typing import List, Optional
 from datetime import date
 
-DATABASE_URL = "mysql+pymysql://user:password@localhost/venda_certa"
+DATABASE_URL = "mysql+pymysql://davi:1910@localhost/venda_certa"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

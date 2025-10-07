@@ -8,14 +8,14 @@ from prophet import Prophet
 from datetime import datetime, timedelta
 import pandas as pd
 
-DATABASE_URL = "mysql+pymysql://user:password@localhost/venda_certa"
+DATABASE_URL = "mysql+pymysql://davi:1910@localhost/venda_certa"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI(title="Predict API")
 
-SALES_API_URL = "http://localhost:8000"  # Assumindo porta 8000 para Sales API
+SALES_API_URL = "http://localhost:8000"  
 
 async def get_holidays(year: int):
     async with httpx.AsyncClient() as client:

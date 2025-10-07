@@ -8,3 +8,5 @@ httpx
 pytest
 pytest-asyncio
 python-dotenv
+pytrends
+boto3
