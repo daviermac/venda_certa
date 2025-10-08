@@ -1,11 +1,17 @@
 import random
 from datetime import datetime, timedelta
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from models import Base, Product, Sale
 
 # Configurar conexão com MySQL usuario e senha
-DATABASE_URL = "mysql+pymysql://davi:1910@localhost/venda_certa"
+DATABASE_URL = "mysql+pymysql://root:1910@localhost/venda_certa"
+
+temp_engine = create_engine("mysql+pymysql://root:1910@localhost")
+with temp_engine.connect() as conn:
+    conn.execute(text("CREATE DATABASE IF NOT EXISTS venda_certa"))
+    conn.commit()
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
