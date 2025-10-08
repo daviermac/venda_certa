@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 pymysql
-streamlit
+flask
 prophet
 httpx
 pytest
@@ -10,3 +10,5 @@ pytest-asyncio
 python-dotenv
 pytrends
 boto3
+bcrypt
+plotly
