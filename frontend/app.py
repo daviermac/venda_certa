@@ -10,22 +10,22 @@ import random
 from pytrends.request import TrendReq
 import boto3
 
-# ======== CONFIGURAÇÃO DAS APIS ========
+# CONFIGURAÇÃO DAS APIS 
 PREDICT_API_URL = "http://localhost:8001"
 SALES_API_URL = "http://localhost:8000"
 
-# ======== CONFIGURAÇÃO AMAZON E GOOGLE ========
+# CONFIGURAÇÃO AMAZON E GOOGLE 
 AWS_REGION = "us-east-1"
 pytrends = TrendReq(hl='pt-BR', tz=180)
 
-# Inicializar cliente da AWS (simulando integração com Amazon Product Advertising API)
+# Inicializar cliente da AWS 
 try:
     s3 = boto3.client('s3', region_name=AWS_REGION)
 except Exception as e:
     s3 = None
     st.warning("AWS não configurada completamente: recursos de sugestão limitados.")
 
-# ======== AUTENTICAÇÃO LOCAL SIMPLES ========
+# AUTENTICAÇÃO LOCAL  
 USER_FILE = "users.json"
 
 def load_users():
@@ -41,7 +41,7 @@ def save_users(users):
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
-# ======== FUNÇÕES DE MERCADO ========
+# FUNÇÕES DE MERCADO 
 def get_google_trends():
     try:
         pytrends.build_payload(kw_list=["compras online", "promoções", "ofertas", "produtos em alta"], cat=0, timeframe='today 1-m', geo='BR', gprop='')
@@ -66,7 +66,7 @@ def get_amazon_trends():
     random.shuffle(trends)
     return trends[:3]
 
-# ======== INTERFACE LOGIN ========
+# INTERFACE LOGIN 
 def login_screen():
     st.title("Venda Certa - Acesso ao Sistema")
     menu = st.sidebar.selectbox("Menu", ["Login", "Cadastro"])
@@ -99,7 +99,7 @@ def login_screen():
             else:
                 st.error("Usuário ou senha incorretos.")
 
-# ======== DASHBOARD DE VENDAS E TENDÊNCIAS ========
+# DASHBOARD DE VENDAS E TENDÊNCIAS
 def prediction_dashboard():
     st.title("Venda Certa - Previsões e Tendências")
 
@@ -201,7 +201,7 @@ def prediction_dashboard():
         for trend in amazon_trends:
             st.markdown(f"- *{trend['produto']}* ({trend['categoria']}) – {trend['crescimento']}")
 
-# ======== CONTROLE DE ACESSO ========
+# ======== CONTROLE DE ACESSO 
 if "user" not in st.session_state:
     login_screen()
 else:
