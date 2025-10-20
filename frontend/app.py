@@ -11,7 +11,7 @@ from pytrends.request import TrendReq
 import boto3
 
 app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_aqui'
+app.secret_key = '1910'
 
 # CONFIGURAÇÃO DAS APIS 
 PREDICT_API_URL = "http://localhost:8001"

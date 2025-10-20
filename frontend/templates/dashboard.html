@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Venda Certa - Dashboard</title>
+</head>
+<body>
+    <h1>Venda Certa - Dashboard de Previsões</h1>
+    <p>Bem-vindo, {{ user }}!</p>
+    <a href="/logout">Sair</a>
+
+    <h2>Selecionar Escopo de Previsão</h2>
+    <form method="POST">
+        <label for="scope">Escopo:</label>
+        <select id="scope" name="scope">
+            <option value="total">Total</option>
+            <option value="category">Por Categoria</option>
+            <option value="product">Por Produto</option>
+        </select><br>
+        <label for="periods">Períodos (dias):</label>
+        <input type="number" id="periods" name="periods" value="30" required><br>
+        <button type="submit">Gerar Previsão</button>
+    </form>
+
+    {% if graph_html %}
+    <h2>Gráfico de Previsões</h2>
+    {{ graph_html | safe }}
+    {% endif %}
+
+    {% if recommendations %}
+    <h2>Recomendações de Estoque</h2>
+    <ul>
+    {% for rec in recommendations %}
+        <li>{{ rec }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h2>Tendências de Mercado</h2>
+    <p>Google Trends: {{ google_trends }}</p>
+    <p>Amazon Trends: {{ amazon_trends }}</p>
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>
