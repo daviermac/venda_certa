@@ -2,46 +2,167 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venda Certa - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <h1>Venda Certa - Dashboard de Previsões</h1>
-    <p>Bem-vindo, {{ user }}!</p>
-    <a href="/logout">Sair</a>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h1 class="ml-3 text-xl font-semibold text-gray-900">Venda Certa</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-700">Olá, {{ user }}!</span>
+                    <a href="{{ url_for('logout') }}" class="text-sm text-blue-600 hover:text-blue-500">Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <h2>Selecionar Escopo de Previsão</h2>
-    <form method="POST">
-        <label for="scope">Escopo:</label>
-        <select id="scope" name="scope">
-            <option value="total">Total</option>
-            <option value="category">Por Categoria</option>
-            <option value="product">Por Produto</option>
-        </select><br>
-        <label for="periods">Períodos (dias):</label>
-        <input type="number" id="periods" name="periods" value="30" required><br>
-        <button type="submit">Gerar Previsão</button>
-    </form>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Formulário de Previsão -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Gerar Previsão de Vendas</h2>
+            <form method="POST" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="scope" class="block text-sm font-medium text-gray-700 mb-1">Escopo</label>
+                        <select id="scope" name="scope" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="total">Total de Vendas</option>
+                            <option value="category">Por Categoria</option>
+                            <option value="product">Por Produto</option>
+                        </select>
+                    </div>
+                    <div id="category-select" class="hidden">
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                        <select id="category" name="category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            {% for cat in categories %}
+                            <option value="{{ cat }}">{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id="product-select" class="hidden">
+                        <label for="product" class="block text-sm font-medium text-gray-700 mb-1">Produto</label>
+                        <select id="product" name="product" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            {% for name, id in product_options.items() %}
+                            <option value="{{ id }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="periods" class="block text-sm font-medium text-gray-700 mb-1">Períodos (dias)</label>
+                        <input type="number" id="periods" name="periods" value="{{ periods or 30 }}" min="1" max="365" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" name="generate" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        Gerar Previsão
+                    </button>
+                </div>
+            </form>
+        </div>
 
-    {% if graph_html %}
-    <h2>Gráfico de Previsões</h2>
-    {{ graph_html | safe }}
-    {% endif %}
+        <!-- Gráfico -->
+        {% if graph_html %}
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Histórico vs Previsão</h2>
+            <div class="w-full">
+                {{ graph_html | safe }}
+            </div>
+        </div>
+        {% endif %}
 
-    {% if recommendations %}
-    <h2>Recomendações de Estoque</h2>
-    <ul>
-    {% for rec in recommendations %}
-        <li>{{ rec }}</li>
-    {% endfor %}
-    </ul>
-    {% endif %}
+        <!-- Recomendações -->
+        {% if rec_data %}
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Recomendações de Estoque</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Previsão (unidades)</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estoque Sugerido</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for rec in rec_data %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.date }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ "%.0f"|format(rec.predicted_quantity) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ "%.0f"|format(rec.recommended_stock) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if rec.action == 'comprar' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Comprar</span>
+                                {% elif rec.action == 'manter' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Manter</span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Vender</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
 
-    <h2>Tendências de Mercado</h2>
-    <p>Google Trends: {{ google_trends }}</p>
-    <p>Amazon Trends: {{ amazon_trends }}</p>
+        <!-- Tendências de Mercado -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Tendências de Mercado</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-md font-medium text-gray-900 mb-2">Google Trends (Pesquisas Online)</h3>
+                    <p class="text-sm text-gray-600">Dados simulados de tendências de busca relacionadas a compras online.</p>
+                </div>
+                <div>
+                    <h3 class="text-md font-medium text-gray-900 mb-2">Amazon Trends (Produtos em Alta)</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-sm font-medium text-gray-900">Smartwatch</span>
+                            <span class="ml-auto text-sm text-green-600">+45%</span>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-sm font-medium text-gray-900">Fones Bluetooth</span>
+                            <span class="ml-auto text-sm text-green-600">+37%</span>
+                        </div>
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="text-sm font-medium text-gray-900">Tênis Esportivo</span>
+                            <span class="ml-auto text-sm text-green-600">+28%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    {% if error %}
-    <p style="color: red;">{{ error }}</p>
-    {% endif %}
+    <script>
+        // JavaScript para mostrar/esconder selects dinamicamente
+        document.getElementById('scope').addEventListener('change', function() {
+            const scope = this.value;
+            document.getElementById('category-select').classList.toggle('hidden', scope !== 'category');
+            document.getElementById('product-select').classList.toggle('hidden', scope !== 'product');
+        });
+    </script>
 </body>
 </html>

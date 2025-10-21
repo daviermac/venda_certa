@@ -20,30 +20,45 @@ Sistema de previsão de vendas sazonais para apoio à decisão de estoque e plan
 
 ## Como Rodar
 
+### Configuração Inicial
 1. Configurar ambiente virtual e instalar dependências:
    ```
    python -m venv venv
-
    venv\Scripts\activate.bat
-
    pip install -r requirements.txt
-
    ```
 
-2. Configurar banco MySQL e ajustar variáveis de ambiente.
+2. Configurar banco MySQL e ajustar variáveis de ambiente (DATABASE_URL no .env).
 
-3. Executar scripts de criação e povoamento do banco.
-
-4. Rodar APIs:
+3. Executar scripts de criação e povoamento do banco:
    ```
-   uvicorn api.sales_api:app --reload
-   uvicorn api.predict_api:app --reload
+   python database/populate.py
    ```
 
-5. Rodar frontend:
+### Executando o Sistema
+**IMPORTANTE:** O projeto tem 3 componentes que precisam rodar simultaneamente para funcionar completamente.
+
+1. **Sales API** (porta 8000 - fornece dados históricos):
    ```
-   streamlit run frontend/app.py
+   uvicorn api.sales_api:app --reload --host 0.0.0.0 --port 8000
    ```
+
+2. **Predict API** (porta 8001 - gera previsões):
+   ```
+   uvicorn api.predict_api:app --reload --host 0.0.0.0 --port 8001
+   ```
+
+3. **Frontend** (porta 5000 - interface web):
+   ```
+   cd frontend && python app.py
+   ```
+
+### Acesso
+- **Frontend:** http://127.0.0.1:5000
+- **Sales API Docs:** http://127.0.0.1:8000/docs
+- **Predict API Docs:** http://127.0.0.1:8001/docs
+
+**Nota:** Se rodar apenas o frontend (`python app.py`), o site abre mas as funcionalidades de previsão não funcionam, pois dependem das APIs rodando em background.
 
 ## Testes
 

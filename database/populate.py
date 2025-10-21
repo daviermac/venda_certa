@@ -41,10 +41,14 @@ def is_holiday(date):
 def generate_sales():
     session = SessionLocal()
     try:
-        # Inserir produtos
+        # Verificar se produtos já existem
+        existing_products = session.query(Product.id).all()
+        existing_ids = {p.id for p in existing_products}
+        # Inserir produtos apenas se não existirem
         for prod in products_data:
-            product = Product(id=prod["id"], name=prod["name"], category=prod["category"])
-            session.add(product)
+            if prod["id"] not in existing_ids:
+                product = Product(id=prod["id"], name=prod["name"], category=prod["category"])
+                session.add(product)
         session.commit()
 
         # Gerar vendas de 2021-01-01 a 2023-12-31

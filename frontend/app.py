@@ -105,23 +105,16 @@ def dashboard():
 
     scope = request.form.get('scope', 'total')
     scope_id = None
-    if scope == 'category':
-        try:
-            response = requests.get(f"{SALES_API_URL}/products")
-            if response.status_code == 200:
-                products = response.json()
-                categories = list(set(p['category'] for p in products))
-        except:
-            categories = []
-    elif scope == 'product':
-        try:
-            response = requests.get(f"{SALES_API_URL}/products")
-            if response.status_code == 200:
-                products = response.json()
-                product_options = {p['name']: p['id'] for p in products}
-        except:
-            product_options = {}
-    else:
+    categories = []
+    product_options = {}
+
+    try:
+        response = requests.get(f"{SALES_API_URL}/products")
+        if response.status_code == 200:
+            products = response.json()
+            categories = list(set(p['category'] for p in products))
+            product_options = {p['name']: p['id'] for p in products}
+    except:
         categories = []
         product_options = {}
 
@@ -155,7 +148,10 @@ def dashboard():
                 hist_df = hist_df.rename(columns={'total_quantity': 'quantity'})
 
             pred_df = pd.DataFrame(data['predictions'])
-            pred_df['date'] = pd.to_datetime(pred_df['date'])
+            if 'date' in pred_df.columns:
+                pred_df['date'] = pd.to_datetime(pred_df['date'])
+            else:
+                pred_df['date'] = pd.to_datetime(pred_df['ds'])
 
             fig = go.Figure()
             if not hist_df.empty:

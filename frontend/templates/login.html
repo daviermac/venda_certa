@@ -2,20 +2,129 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venda Certa - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0070bd 0%, #36aaf5 100%);
+        }
+    </style>
 </head>
-<body>
-    <h1>Venda Certa - Acesso ao Sistema</h1>
-    <form method="POST">
-        <label for="user">Usuário:</label>
-        <input type="text" id="user" name="user" required><br>
-        <label for="password">Senha:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">Entrar</button>
-    </form>
-    <p>Não tem conta? <a href="/register">Cadastrar</a></p>
-    {% if error %}
-    <p style="color: red;">{{ error }}</p>
-    {% endif %}
+<body class="min-h-screen flex flex-col md:flex-row">
+    <!-- Lado Esquerdo - Formulário -->
+    <div class="flex-1 flex items-center justify-center p-6 md:p-10">
+        <div class="w-full max-w-md space-y-8">
+            <div class="text-center">
+                <div class="flex justify-center">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                </div>
+                <h1 class="mt-6 text-3xl font-bold tracking-tight text-gray-900">Venda Certa</h1>
+                <p class="mt-2 text-sm text-gray-500">Sistema de Previsão de Vendas Sazonais</p>
+            </div>
+
+            <div class="mt-8 space-y-6">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('login') }}" method="POST" class="space-y-4">
+                    <div class="space-y-2">
+                        <label for="user" class="block text-sm font-medium text-gray-700">Usuário</label>
+                        <div class="relative">
+                            <input
+                                id="user"
+                                name="user"
+                                type="text"
+                                placeholder="Digite seu usuário"
+                                class="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+                            <a href="#" class="text-sm text-blue-600 hover:text-blue-500">Esqueceu a senha?</a>
+                        </div>
+                        <div class="relative">
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                placeholder="••••••••"
+                                class="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Entrar
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center text-sm">
+                    <p class="text-gray-500">Não tem uma conta? <a href="{{ url_for('register') }}" class="font-medium text-blue-600 hover:text-blue-500">Cadastre-se</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lado Direito - Ilustração -->
+    <div class="hidden md:flex md:flex-1 gradient-bg text-white">
+        <div class="flex flex-col items-center justify-center w-full p-12">
+            <div class="max-w-md text-center">
+                <h2 class="text-3xl font-bold mb-6">Preveja vendas com precisão</h2>
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <p class="text-left">Análise de vendas históricas e sazonais</p>
+                    </div>
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        <p class="text-left">Previsões precisas com Machine Learning</p>
+                    </div>
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <p class="text-left">Recomendações automáticas de estoque</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
