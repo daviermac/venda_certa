@@ -124,7 +124,8 @@ def dashboard():
     rec_data = None
     pred_df = pd.DataFrame()
 
-    if request.method == 'POST' and 'generate' in request.form:
+    if request.method == 'POST' and 'view_predictions' in request.form:
+        # Redirecionar para a página de previsões com os parâmetros do formulário
         params = {"scope": scope, "periods": periods}
         if scope == 'category' and category:
             params["scope_id"] = category
@@ -189,6 +190,62 @@ def dashboard():
 
                 # Redirecionar para a página de previsões
                 return redirect(url_for('predictions'))
+            else:
+                flash("Erro ao gerar previsão.")
+        except Exception as e:
+            flash(f"Erro de conexão: {e}")
+
+    if request.method == 'POST' and 'generate' in request.form:
+        params = {"scope": scope, "periods": periods}
+        if scope == 'category' and category:
+            params["scope_id"] = category
+        elif scope == 'product' and product:
+            params["scope_id"] = product_options.get(product)
+
+        try:
+            response = requests.get(f"{PREDICT_API_URL}/predict", params=params)
+            if response.status_code == 200:
+                data = response.json()
+
+                # Dados históricos
+                hist_params = {}
+                if scope == "category":
+                    hist_params["category"] = category
+                elif scope == "product":
+                    hist_params["product_id"] = product_options.get(product)
+
+                hist_response = requests.get(f"{SALES_API_URL}/sales/aggregate", params={**hist_params, "group_by": scope if scope != "total" else "total", "period": "daily"})
+                hist_data = []
+                if hist_response.status_code == 200:
+                    hist_data = hist_response.json()
+
+                hist_df = pd.DataFrame(hist_data)
+                if not hist_df.empty:
+                    hist_df['date'] = pd.to_datetime(hist_df['date'] if 'date' in hist_df else hist_df['month'])
+                    hist_df = hist_df.rename(columns={'total_quantity': 'quantity'})
+
+                pred_df = pd.DataFrame(data['predictions'])
+                if 'date' in pred_df.columns:
+                    pred_df['date'] = pd.to_datetime(pred_df['date'])
+                else:
+                    pred_df['date'] = pd.to_datetime(pred_df['ds'])
+
+                fig = go.Figure()
+                if not hist_df.empty:
+                    fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Histórico'))
+                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão'))
+                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['lower_bound'], fill=None, mode='lines', line_color='lightblue', name='Limite Inferior'))
+                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['upper_bound'], fill='tonexty', mode='lines', line_color='lightblue', name='Limite Superior'))
+
+                graph_html = fig.to_html(full_html=False)
+
+                # Recomendações
+                rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
+                if rec_response.status_code == 200:
+                    rec_data = rec_response.json()
+                else:
+                    flash("Erro ao carregar recomendações.")
+
             else:
                 flash("Erro ao gerar previsão.")
         except Exception as e:

@@ -6,8 +6,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: venda_certa
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1910
     ports:
       - "3306:3306"
     volumes:
@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=mysql+pymysql://user:password@db:3306/venda_certa
+      - DATABASE_URL=mysql+pymysql://root:1910@db:3306/venda_certa
     command: uvicorn sales_api:app --host 0.0.0.0 --port 8000
 
   predict-api:
@@ -31,7 +31,7 @@ services:
       - db
       - sales-api
     environment:
-      - DATABASE_URL=mysql+pymysql://user:password@db:3306/venda_certa
+      - DATABASE_URL=mysql+pymysql://root:1910@db:3306/venda_certa
       - SALES_API_URL=http://sales-api:8000
     command: uvicorn predict_api:app --host 0.0.0.0 --port 8001
 

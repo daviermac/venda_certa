@@ -1,11 +1,14 @@
 from fastapi import FastAPI, HTTPException, Query
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from database.models import Base, Product, Sale
 from typing import List, Optional
 from datetime import date
 
-DATABASE_URL = "mysql+pymysql://davi:1910@localhost/venda_certa"
+DATABASE_URL = "mysql+pymysql://root:1910@localhost/venda_certa"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -5,7 +5,7 @@ Sistema de previsão de vendas sazonais para apoio à decisão de estoque e plan
 ## Tecnologias
 
 - FastAPI para APIs backend
-- Streamlit para frontend interativo
+- flask para frontend 
 - MySQL para banco de dados
 - Prophet para modelos de previsão
 - Docker para containerização
