@@ -1,0 +1,409 @@
+data,produto,categoria,quantidade,preco
+2023-01-01,Smartphone,Eletrônicos,20,2000.00
+2023-01-02,Notebook,Eletrônicos,15,3000.00
+2023-01-03,Camiseta,Roupas,50,50.00
+2023-01-04,Calça Jeans,Roupas,30,150.00
+2023-01-05,Livro,Livros,40,30.00
+2023-01-06,Cadeira,Móveis,10,400.00
+2023-01-07,Smartphone,Eletrônicos,25,2000.00
+2023-01-08,Notebook,Eletrônicos,18,3000.00
+2023-01-09,Camiseta,Roupas,55,50.00
+2023-01-10,Calça Jeans,Roupas,35,150.00
+2023-01-11,Livro,Livros,45,30.00
+2023-01-12,Cadeira,Móveis,12,400.00
+2023-01-13,Smartphone,Eletrônicos,22,2000.00
+2023-01-14,Notebook,Eletrônicos,20,3000.00
+2023-01-15,Camiseta,Roupas,60,50.00
+2023-01-16,Calça Jeans,Roupas,40,150.00
+2023-01-17,Livro,Livros,50,30.00
+2023-01-18,Cadeira,Móveis,15,400.00
+2023-01-19,Smartphone,Eletrônicos,28,2000.00
+2023-01-20,Notebook,Eletrônicos,22,3000.00
+2023-01-21,Camiseta,Roupas,65,50.00
+2023-01-22,Calça Jeans,Roupas,45,150.00
+2023-01-23,Livro,Livros,55,30.00
+2023-01-24,Cadeira,Móveis,18,400.00
+2023-01-25,Smartphone,Eletrônicos,30,2000.00
+2023-01-26,Notebook,Eletrônicos,25,3000.00
+2023-01-27,Camiseta,Roupas,70,50.00
+2023-01-28,Calça Jeans,Roupas,50,150.00
+2023-01-29,Livro,Livros,60,30.00
+2023-01-30,Cadeira,Móveis,20,400.00
+2023-02-01,Smartphone,Eletrônicos,32,2000.00
+2023-02-02,Notebook,Eletrônicos,27,3000.00
+2023-02-03,Camiseta,Roupas,75,50.00
+2023-02-04,Calça Jeans,Roupas,55,150.00
+2023-02-05,Livro,Livros,65,30.00
+2023-02-06,Cadeira,Móveis,22,400.00
+2023-02-07,Smartphone,Eletrônicos,35,2000.00
+2023-02-08,Notebook,Eletrônicos,30,3000.00
+2023-02-09,Camiseta,Roupas,80,50.00
+2023-02-10,Calça Jeans,Roupas,60,150.00
+2023-02-11,Livro,Livros,70,30.00
+2023-02-12,Cadeira,Móveis,25,400.00
+2023-02-13,Smartphone,Eletrônicos,38,2000.00
+2023-02-14,Notebook,Eletrônicos,32,3000.00
+2023-02-15,Camiseta,Roupas,85,50.00
+2023-02-16,Calça Jeans,Roupas,65,150.00
+2023-02-17,Livro,Livros,75,30.00
+2023-02-18,Cadeira,Móveis,28,400.00
+2023-02-19,Smartphone,Eletrônicos,40,2000.00
+2023-02-20,Notebook,Eletrônicos,35,3000.00
+2023-02-21,Camiseta,Roupas,90,50.00
+2023-02-22,Calça Jeans,Roupas,70,150.00
+2023-02-23,Livro,Livros,80,30.00
+2023-02-24,Cadeira,Móveis,30,400.00
+2023-02-25,Smartphone,Eletrônicos,42,2000.00
+2023-02-26,Notebook,Eletrônicos,37,3000.00
+2023-02-27,Camiseta,Roupas,95,50.00
+2023-02-28,Calça Jeans,Roupas,75,150.00
+2023-03-01,Livro,Livros,85,30.00
+2023-03-02,Cadeira,Móveis,32,400.00
+2023-03-03,Smartphone,Eletrônicos,45,2000.00
+2023-03-04,Notebook,Eletrônicos,40,3000.00
+2023-03-05,Camiseta,Roupas,100,50.00
+2023-03-06,Calça Jeans,Roupas,80,150.00
+2023-03-07,Livro,Livros,90,30.00
+2023-03-08,Cadeira,Móveis,35,400.00
+2023-03-09,Smartphone,Eletrônicos,48,2000.00
+2023-03-10,Notebook,Eletrônicos,42,3000.00
+2023-03-11,Camiseta,Roupas,105,50.00
+2023-03-12,Calça Jeans,Roupas,85,150.00
+2023-03-13,Livro,Livros,95,30.00
+2023-03-14,Cadeira,Móveis,38,400.00
+2023-03-15,Smartphone,Eletrônicos,50,2000.00
+2023-03-16,Notebook,Eletrônicos,45,3000.00
+2023-03-17,Camiseta,Roupas,110,50.00
+2023-03-18,Calça Jeans,Roupas,90,150.00
+2023-03-19,Livro,Livros,100,30.00
+2023-03-20,Cadeira,Móveis,40,400.00
+2023-03-21,Smartphone,Eletrônicos,52,2000.00
+2023-03-22,Notebook,Eletrônicos,47,3000.00
+2023-03-23,Camiseta,Roupas,115,50.00
+2023-03-24,Calça Jeans,Roupas,95,150.00
+2023-03-25,Livro,Livros,105,30.00
+2023-03-26,Cadeira,Móveis,42,400.00
+2023-03-27,Smartphone,Eletrônicos,55,2000.00
+2023-03-28,Notebook,Eletrônicos,50,3000.00
+2023-03-29,Camiseta,Roupas,120,50.00
+2023-03-30,Calça Jeans,Roupas,100,150.00
+2023-03-31,Livro,Livros,110,30.00
+2023-04-01,Cadeira,Móveis,45,400.00
+2023-04-02,Smartphone,Eletrônicos,58,2000.00
+2023-04-03,Notebook,Eletrônicos,52,3000.00
+2023-04-04,Camiseta,Roupas,125,50.00
+2023-04-05,Calça Jeans,Roupas,105,150.00
+2023-04-06,Livro,Livros,115,30.00
+2023-04-07,Cadeira,Móveis,48,400.00
+2023-04-08,Smartphone,Eletrônicos,60,2000.00
+2023-04-09,Notebook,Eletrônicos,55,3000.00
+2023-04-10,Camiseta,Roupas,130,50.00
+2023-04-11,Calça Jeans,Roupas,110,150.00
+2023-04-12,Livro,Livros,120,30.00
+2023-04-13,Cadeira,Móveis,50,400.00
+2023-04-14,Smartphone,Eletrônicos,62,2000.00
+2023-04-15,Notebook,Eletrônicos,57,3000.00
+2023-04-16,Camiseta,Roupas,135,50.00
+2023-04-17,Calça Jeans,Roupas,115,150.00
+2023-04-18,Livro,Livros,125,30.00
+2023-04-19,Cadeira,Móveis,52,400.00
+2023-04-20,Smartphone,Eletrônicos,65,2000.00
+2023-04-21,Notebook,Eletrônicos,60,3000.00
+2023-04-22,Camiseta,Roupas,140,50.00
+2023-04-23,Calça Jeans,Roupas,120,150.00
+2023-04-24,Livro,Livros,130,30.00
+2023-04-25,Cadeira,Móveis,55,400.00
+2023-04-26,Smartphone,Eletrônicos,67,2000.00
+2023-04-27,Notebook,Eletrônicos,62,3000.00
+2023-04-28,Camiseta,Roupas,145,50.00
+2023-04-29,Calça Jeans,Roupas,125,150.00
+2023-04-30,Livro,Livros,135,30.00
+2023-05-01,Cadeira,Móveis,57,400.00
+2023-05-02,Smartphone,Eletrônicos,70,2000.00
+2023-05-03,Notebook,Eletrônicos,65,3000.00
+2023-05-04,Camiseta,Roupas,150,50.00
+2023-05-05,Calça Jeans,Roupas,130,150.00
+2023-05-06,Livro,Livros,140,30.00
+2023-05-07,Cadeira,Móveis,60,400.00
+2023-05-08,Smartphone,Eletrônicos,72,2000.00
+2023-05-09,Notebook,Eletrônicos,67,3000.00
+2023-05-10,Camiseta,Roupas,155,50.00
+2023-05-11,Calça Jeans,Roupas,135,150.00
+2023-05-12,Livro,Livros,145,30.00
+2023-05-13,Cadeira,Móveis,62,400.00
+2023-05-14,Smartphone,Eletrônicos,75,2000.00
+2023-05-15,Notebook,Eletrônicos,70,3000.00
+2023-05-16,Camiseta,Roupas,160,50.00
+2023-05-17,Calça Jeans,Roupas,140,150.00
+2023-05-18,Livro,Livros,150,30.00
+2023-05-19,Cadeira,Móveis,65,400.00
+2023-05-20,Smartphone,Eletrônicos,77,2000.00
+2023-05-21,Notebook,Eletrônicos,72,3000.00
+2023-05-22,Camiseta,Roupas,165,50.00
+2023-05-23,Calça Jeans,Roupas,145,150.00
+2023-05-24,Livro,Livros,155,30.00
+2023-05-25,Cadeira,Móveis,67,400.00
+2023-05-26,Smartphone,Eletrônicos,80,2000.00
+2023-05-27,Notebook,Eletrônicos,75,3000.00
+2023-05-28,Camiseta,Roupas,170,50.00
+2023-05-29,Calça Jeans,Roupas,150,150.00
+2023-05-30,Livro,Livros,160,30.00
+2023-05-31,Cadeira,Móveis,70,400.00
+2023-06-01,Smartphone,Eletrônicos,82,2000.00
+2023-06-02,Notebook,Eletrônicos,77,3000.00
+2023-06-03,Camiseta,Roupas,175,50.00
+2023-06-04,Calça Jeans,Roupas,155,150.00
+2023-06-05,Livro,Livros,165,30.00
+2023-06-06,Cadeira,Móveis,72,400.00
+2023-06-07,Smartphone,Eletrônicos,85,2000.00
+2023-06-08,Notebook,Eletrônicos,80,3000.00
+2023-06-09,Camiseta,Roupas,180,50.00
+2023-06-10,Calça Jeans,Roupas,160,150.00
+2023-06-11,Livro,Livros,170,30.00
+2023-06-12,Cadeira,Móveis,75,400.00
+2023-06-13,Smartphone,Eletrônicos,87,2000.00
+2023-06-14,Notebook,Eletrônicos,82,3000.00
+2023-06-15,Camiseta,Roupas,185,50.00
+2023-06-16,Calça Jeans,Roupas,165,150.00
+2023-06-17,Livro,Livros,175,30.00
+2023-06-18,Cadeira,Móveis,77,400.00
+2023-06-19,Smartphone,Eletrônicos,90,2000.00
+2023-06-20,Notebook,Eletrônicos,85,3000.00
+2023-06-21,Camiseta,Roupas,190,50.00
+2023-06-22,Calça Jeans,Roupas,170,150.00
+2023-06-23,Livro,Livros,180,30.00
+2023-06-24,Cadeira,Móveis,80,400.00
+2023-06-25,Smartphone,Eletrônicos,92,2000.00
+2023-06-26,Notebook,Eletrônicos,87,3000.00
+2023-06-27,Camiseta,Roupas,195,50.00
+2023-06-28,Calça Jeans,Roupas,175,150.00
+2023-06-29,Livro,Livros,185,30.00
+2023-06-30,Cadeira,Móveis,82,400.00
+2023-07-01,Smartphone,Eletrônicos,95,2000.00
+2023-07-02,Notebook,Eletrônicos,90,3000.00
+2023-07-03,Camiseta,Roupas,200,50.00
+2023-07-04,Calça Jeans,Roupas,180,150.00
+2023-07-05,Livro,Livros,190,30.00
+2023-07-06,Cadeira,Móveis,85,400.00
+2023-07-07,Smartphone,Eletrônicos,97,2000.00
+2023-07-08,Notebook,Eletrônicos,92,3000.00
+2023-07-09,Camiseta,Roupas,205,50.00
+2023-07-10,Calça Jeans,Roupas,185,150.00
+2023-07-11,Livro,Livros,195,30.00
+2023-07-12,Cadeira,Móveis,87,400.00
+2023-07-13,Smartphone,Eletrônicos,100,2000.00
+2023-07-14,Notebook,Eletrônicos,95,3000.00
+2023-07-15,Camiseta,Roupas,210,50.00
+2023-07-16,Calça Jeans,Roupas,190,150.00
+2023-07-17,Livro,Livros,200,30.00
+2023-07-18,Cadeira,Móveis,90,400.00
+2023-07-19,Smartphone,Eletrônicos,102,2000.00
+2023-07-20,Notebook,Eletrônicos,97,3000.00
+2023-07-21,Camiseta,Roupas,215,50.00
+2023-07-22,Calça Jeans,Roupas,195,150.00
+2023-07-23,Livro,Livros,205,30.00
+2023-07-24,Cadeira,Móveis,92,400.00
+2023-07-25,Smartphone,Eletrônicos,105,2000.00
+2023-07-26,Notebook,Eletrônicos,100,3000.00
+2023-07-27,Camiseta,Roupas,220,50.00
+2023-07-28,Calça Jeans,Roupas,200,150.00
+2023-07-29,Livro,Livros,210,30.00
+2023-07-30,Cadeira,Móveis,95,400.00
+2023-07-31,Smartphone,Eletrônicos,107,2000.00
+2023-08-01,Notebook,Eletrônicos,102,3000.00
+2023-08-02,Camiseta,Roupas,225,50.00
+2023-08-03,Calça Jeans,Roupas,205,150.00
+2023-08-04,Livro,Livros,215,30.00
+2023-08-05,Cadeira,Móveis,97,400.00
+2023-08-06,Smartphone,Eletrônicos,110,2000.00
+2023-08-07,Notebook,Eletrônicos,105,3000.00
+2023-08-08,Camiseta,Roupas,230,50.00
+2023-08-09,Calça Jeans,Roupas,210,150.00
+2023-08-10,Livro,Livros,220,30.00
+2023-08-11,Cadeira,Móveis,100,400.00
+2023-08-12,Smartphone,Eletrônicos,112,2000.00
+2023-08-13,Notebook,Eletrônicos,107,3000.00
+2023-08-14,Camiseta,Roupas,235,50.00
+2023-08-15,Calça Jeans,Roupas,215,150.00
+2023-08-16,Livro,Livros,225,30.00
+2023-08-17,Cadeira,Móveis,102,400.00
+2023-08-18,Smartphone,Eletrônicos,115,2000.00
+2023-08-19,Notebook,Eletrônicos,110,3000.00
+2023-08-20,Camiseta,Roupas,240,50.00
+2023-08-21,Calça Jeans,Roupas,220,150.00
+2023-08-22,Livro,Livros,230,30.00
+2023-08-23,Cadeira,Móveis,105,400.00
+2023-08-24,Smartphone,Eletrônicos,117,2000.00
+2023-08-25,Notebook,Eletrônicos,112,3000.00
+2023-08-26,Camiseta,Roupas,245,50.00
+2023-08-27,Calça Jeans,Roupas,225,150.00
+2023-08-28,Livro,Livros,235,30.00
+2023-08-29,Cadeira,Móveis,107,400.00
+2023-08-30,Smartphone,Eletrônicos,120,2000.00
+2023-08-31,Notebook,Eletrônicos,115,3000.00
+2023-09-01,Camiseta,Roupas,250,50.00
+2023-09-02,Calça Jeans,Roupas,230,150.00
+2023-09-03,Livro,Livros,240,30.00
+2023-09-04,Cadeira,Móveis,110,400.00
+2023-09-05,Smartphone,Eletrônicos,122,2000.00
+2023-09-06,Notebook,Eletrônicos,117,3000.00
+2023-09-07,Camiseta,Roupas,255,50.00
+2023-09-08,Calça Jeans,Roupas,235,150.00
+2023-09-09,Livro,Livros,245,30.00
+2023-09-10,Cadeira,Móveis,112,400.00
+2023-09-11,Smartphone,Eletrônicos,125,2000.00
+2023-09-12,Notebook,Eletrônicos,120,3000.00
+2023-09-13,Camiseta,Roupas,260,50.00
+2023-09-14,Calça Jeans,Roupas,240,150.00
+2023-09-15,Livro,Livros,250,30.00
+2023-09-16,Cadeira,Móveis,115,400.00
+2023-09-17,Smartphone,Eletrônicos,127,2000.00
+2023-09-18,Notebook,Eletrônicos,122,3000.00
+2023-09-19,Camiseta,Roupas,265,50.00
+2023-09-20,Calça Jeans,Roupas,245,150.00
+2023-09-21,Livro,Livros,255,30.00
+2023-09-22,Cadeira,Móveis,117,400.00
+2023-09-23,Smartphone,Eletrônicos,130,2000.00
+2023-09-24,Notebook,Eletrônicos,125,3000.00
+2023-09-25,Camiseta,Roupas,270,50.00
+2023-09-26,Calça Jeans,Roupas,250,150.00
+2023-09-27,Livro,Livros,260,30.00
+2023-09-28,Cadeira,Móveis,120,400.00
+2023-09-29,Smartphone,Eletrônicos,132,2000.00
+2023-09-30,Notebook,Eletrônicos,127,3000.00
+2023-10-01,Camiseta,Roupas,275,50.00
+2023-10-02,Calça Jeans,Roupas,255,150.00
+2023-10-03,Livro,Livros,265,30.00
+2023-10-04,Cadeira,Móveis,122,400.00
+2023-10-05,Smartphone,Eletrônicos,135,2000.00
+2023-10-06,Notebook,Eletrônicos,130,3000.00
+2023-10-07,Camiseta,Roupas,280,50.00
+2023-10-08,Calça Jeans,Roupas,260,150.00
+2023-10-09,Livro,Livros,270,30.00
+2023-10-10,Cadeira,Móveis,125,400.00
+2023-10-11,Smartphone,Eletrônicos,137,2000.00
+2023-10-12,Notebook,Eletrônicos,132,3000.00
+2023-10-13,Camiseta,Roupas,285,50.00
+2023-10-14,Calça Jeans,Roupas,265,150.00
+2023-10-15,Livro,Livros,275,30.00
+2023-10-16,Cadeira,Móveis,127,400.00
+2023-10-17,Smartphone,Eletrônicos,140,2000.00
+2023-10-18,Notebook,Eletrônicos,135,3000.00
+2023-10-19,Camiseta,Roupas,290,50.00
+2023-10-20,Calça Jeans,Roupas,270,150.00
+2023-10-21,Livro,Livros,280,30.00
+2023-10-22,Cadeira,Móveis,130,400.00
+2023-10-23,Smartphone,Eletrônicos,142,2000.00
+2023-10-24,Notebook,Eletrônicos,137,3000.00
+2023-10-25,Camiseta,Roupas,295,50.00
+2023-10-26,Calça Jeans,Roupas,275,150.00
+2023-10-27,Livro,Livros,285,30.00
+2023-10-28,Cadeira,Móveis,132,400.00
+2023-10-29,Smartphone,Eletrônicos,145,2000.00
+2023-10-30,Notebook,Eletrônicos,140,3000.00
+2023-10-31,Camiseta,Roupas,300,50.00
+2023-11-01,Calça Jeans,Roupas,280,150.00
+2023-11-02,Livro,Livros,290,30.00
+2023-11-03,Cadeira,Móveis,135,400.00
+2023-11-04,Smartphone,Eletrônicos,147,2000.00
+2023-11-05,Notebook,Eletrônicos,142,3000.00
+2023-11-06,Camiseta,Roupas,305,50.00
+2023-11-07,Calça Jeans,Roupas,285,150.00
+2023-11-08,Livro,Livros,295,30.00
+2023-11-09,Cadeira,Móveis,137,400.00
+2023-11-10,Smartphone,Eletrônicos,150,2000.00
+2023-11-11,Notebook,Eletrônicos,145,3000.00
+2023-11-12,Camiseta,Roupas,310,50.00
+2023-11-13,Calça Jeans,Roupas,290,150.00
+2023-11-14,Livro,Livros,300,30.00
+2023-11-15,Cadeira,Móveis,140,400.00
+2023-11-16,Smartphone,Eletrônicos,152,2000.00
+2023-11-17,Notebook,Eletrônicos,147,3000.00
+2023-11-18,Camiseta,Roupas,315,50.00
+2023-11-19,Calça Jeans,Roupas,295,150.00
+2023-11-20,Livro,Livros,305,30.00
+2023-11-21,Cadeira,Móveis,142,400.00
+2023-11-22,Smartphone,Eletrônicos,155,2000.00
+2023-11-23,Notebook,Eletrônicos,150,3000.00
+2023-11-24,Camiseta,Roupas,320,50.00
+2023-11-25,Calça Jeans,Roupas,300,150.00
+2023-11-26,Livro,Livros,310,30.00
+2023-11-27,Cadeira,Móveis,145,400.00
+2023-11-28,Smartphone,Eletrônicos,157,2000.00
+2023-11-29,Notebook,Eletrônicos,152,3000.00
+2023-11-30,Camiseta,Roupas,325,50.00
+2023-12-01,Calça Jeans,Roupas,305,150.00
+2023-12-02,Livro,Livros,315,30.00
+2023-12-03,Cadeira,Móveis,147,400.00
+2023-12-04,Smartphone,Eletrônicos,160,2000.00
+2023-12-05,Notebook,Eletrônicos,155,3000.00
+2023-12-06,Camiseta,Roupas,330,50.00
+2023-12-07,Calça Jeans,Roupas,310,150.00
+2023-12-08,Livro,Livros,320,30.00
+2023-12-09,Cadeira,Móveis,150,400.00
+2023-12-10,Smartphone,Eletrônicos,162,2000.00
+2023-12-11,Notebook,Eletrônicos,157,3000.00
+2023-12-12,Camiseta,Roupas,335,50.00
+2023-12-13,Calça Jeans,Roupas,315,150.00
+2023-12-14,Livro,Livros,325,30.00
+2023-12-15,Cadeira,Móveis,152,400.00
+2023-12-16,Smartphone,Eletrônicos,165,2000.00
+2023-12-17,Notebook,Eletrônicos,160,3000.00
+2023-12-18,Camiseta,Roupas,340,50.00
+2023-12-19,Calça Jeans,Roupas,320,150.00
+2023-12-20,Livro,Livros,330,30.00
+2023-12-21,Cadeira,Móveis,155,400.00
+2023-12-22,Smartphone,Eletrônicos,167,2000.00
+2023-12-23,Notebook,Eletrônicos,162,3000.00
+2023-12-24,Camiseta,Roupas,345,50.00
+2023-12-25,Calça Jeans,Roupas,325,150.00
+2023-12-26,Livro,Livros,335,30.00
+2023-12-27,Cadeira,Móveis,157,400.00
+2023-12-28,Smartphone,Eletrônicos,170,2000.00
+2023-12-29,Notebook,Eletrônicos,165,3000.00
+2023-12-30,Camiseta,Roupas,350,50.00
+2023-12-31,Calça Jeans,Roupas,330,150.00
+2024-01-01,Livro,Livros,340,30.00
+2024-01-02,Cadeira,Móveis,160,400.00
+2024-01-03,Smartphone,Eletrônicos,172,2000.00
+2024-01-04,Notebook,Eletrônicos,167,3000.00
+2024-01-05,Camiseta,Roupas,355,50.00
+2024-01-06,Calça Jeans,Roupas,335,150.00
+2024-01-07,Livro,Livros,345,30.00
+2024-01-08,Cadeira,Móveis,162,400.00
+2024-01-09,Smartphone,Eletrônicos,175,2000.00
+2024-01-10,Notebook,Eletrônicos,170,3000.00
+2024-01-11,Camiseta,Roupas,360,50.00
+2024-01-12,Calça Jeans,Roupas,340,150.00
+2024-01-13,Livro,Livros,350,30.00
+2024-01-14,Cadeira,Móveis,165,400.00
+2024-01-15,Smartphone,Eletrônicos,177,2000.00
+2024-01-16,Notebook,Eletrônicos,172,3000.00
+2024-01-17,Camiseta,Roupas,365,50.00
+2024-01-18,Calça Jeans,Roupas,345,150.00
+2024-01-19,Livro,Livros,355,30.00
+2024-01-20,Cadeira,Móveis,167,400.00
+2024-01-21,Smartphone,Eletrônicos,180,2000.00
+2024-01-22,Notebook,Eletrônicos,175,3000.00
+2024-01-23,Camiseta,Roupas,370,50.00
+2024-01-24,Calça Jeans,Roupas,350,150.00
+2024-01-25,Livro,Livros,360,30.00
+2024-01-26,Cadeira,Móveis,170,400.00
+2024-01-27,Smartphone,Eletrônicos,182,2000.00
+2024-01-28,Notebook,Eletrônicos,177,3000.00
+2024-01-29,Camiseta,Roupas,375,50.00
+2024-01-30,Calça Jeans,Roupas,355,150.00
+2024-01-31,Livro,Livros,365,30.00
+2024-02-01,Cadeira,Móveis,172,400.00
+2024-02-02,Smartphone,Eletrônicos,185,2000.00
+2024-02-03,Notebook,Eletrônicos,180,3000.00
+2024-02-04,Camiseta,Roupas,380,50.00
+2024-02-05,Calça Jeans,Roupas,360,150.00
+2024-02-06,Livro,Livros,370,30.00
+2024-02-07,Cadeira,Móveis,175,400.00
+2024-02-08,Smartphone,Eletrônicos,187,2000.00
+2024-02-09,Notebook,Eletrônicos,182,3000.00
+2024-02-10,Camiseta,Roupas,385,50.00
+2024-02-11,Calça Jeans,Roupas,365,150.00
+2024-02-12,Livro,Livros,375,30.00
+2024-02-13,Cadeira,Móveis,177,400.00
