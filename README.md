@@ -50,8 +50,9 @@ Sistema de previsão de vendas sazonais para apoio à decisão de estoque e plan
 
 3. **Frontend** (porta 5000 - interface web):
    ```
-   cd frontend && python app.py
+   cd frontend; python app.py
    ```
+   (Use `;` para PowerShell ou `&&` para cmd.exe)
 
 ### Acesso
 - **Frontend:** http://127.0.0.1:5000
