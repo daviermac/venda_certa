@@ -4,14 +4,18 @@ from sqlalchemy.orm import sessionmaker
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from database.models import Base, Product, Sale
+from database.models import Base, Product, Sale, User, Trend, Holiday
 from typing import List, Optional
 from datetime import date
+import hashlib
 
 DATABASE_URL = "mysql+pymysql://root:1910@localhost/venda_certa"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Criar tabelas se não existirem
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Sales API")
 
@@ -21,6 +25,76 @@ def list_products():
     try:
         products = session.query(Product).all()
         return [{"id": p.id, "name": p.name, "category": p.category} for p in products]
+    finally:
+        session.close()
+
+# Endpoints para usuários
+@app.post("/users/login")
+def login_user(username: str, password: str):
+    session = SessionLocal()
+    try:
+        user = session.query(User).filter(User.username == username).first()
+        if user and user.password_hash == hashlib.sha256(password.encode()).hexdigest():
+            return {"success": True, "message": "Login realizado com sucesso"}
+        else:
+            raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
+    finally:
+        session.close()
+
+@app.post("/users/register")
+def register_user(username: str, password: str):
+    session = SessionLocal()
+    try:
+        existing_user = session.query(User).filter(User.username == username).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Usuário já existe")
+
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+        new_user = User(username=username, password_hash=password_hash)
+        session.add(new_user)
+        session.commit()
+        return {"success": True, "message": "Usuário registrado com sucesso"}
+    finally:
+        session.close()
+
+# Endpoints para tendências
+@app.get("/trends", response_model=List[dict])
+def get_trends(source: Optional[str] = None):
+    session = SessionLocal()
+    try:
+        query = session.query(Trend)
+        if source:
+            query = query.filter(Trend.source == source)
+        trends = query.all()
+        return [
+            {
+                "id": t.id,
+                "source": t.source,
+                "product_name": t.product_name,
+                "category": t.category,
+                "growth_percentage": t.growth_percentage,
+                "created_at": t.created_at.isoformat()
+            }
+            for t in trends
+        ]
+    finally:
+        session.close()
+
+# Endpoints para feriados
+@app.get("/holidays", response_model=List[dict])
+def get_holidays():
+    session = SessionLocal()
+    try:
+        holidays = session.query(Holiday).all()
+        return [
+            {
+                "id": h.id,
+                "date": h.date.isoformat(),
+                "name": h.name,
+                "is_weekend": h.is_weekend
+            }
+            for h in holidays
+        ]
     finally:
         session.close()
 

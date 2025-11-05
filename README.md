@@ -14,7 +14,7 @@ Sistema de previsão de vendas sazonais para apoio à decisão de estoque e plan
 
 - /api: Sales API e Predict API
 - /database: Modelos e scripts de povoamento
-- /frontend: Aplicação Streamlit
+- /frontend: Flask
 - /tests: Testes automatizados
 - docker-compose.yml para orquestração
 
@@ -40,12 +40,13 @@ Sistema de previsão de vendas sazonais para apoio à decisão de estoque e plan
 
 1. **Sales API** (porta 8000 - fornece dados históricos):
    ```
-   uvicorn api.sales_api:app --reload --host 0.0.0.0 --port 8000
+   python -m uvicorn api.sales_api:app --reload --host 0.0.0.0 --port 8000
    ```
 
 2. **Predict API** (porta 8001 - gera previsões):
    ```
-   uvicorn api.predict_api:app --reload --host 0.0.0.0 --port 8001
+   python -m uvicorn api.predict_api:app --reload --host 0.0.0.0 --port 8001
+
    ```
 
 3. **Frontend** (porta 5000 - interface web):

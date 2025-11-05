@@ -3,12 +3,8 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
-import hashlib
-import json
-import os
 import random
 from pytrends.request import TrendReq
-import boto3
 
 app = Flask(__name__)
 app.secret_key = '1910'
@@ -17,31 +13,8 @@ app.secret_key = '1910'
 PREDICT_API_URL = "http://localhost:8001"
 SALES_API_URL = "http://localhost:8000"
 
-# CONFIGURAÇÃO AMAZON E GOOGLE
-AWS_REGION = "us-east-1"
+# CONFIGURAÇÃO GOOGLE TRENDS
 pytrends = TrendReq(hl='pt-BR', tz=180)
-
-# Inicializar cliente da AWS
-try:
-    s3 = boto3.client('s3', region_name=AWS_REGION)
-except Exception as e:
-    s3 = None
-
-# AUTENTICAÇÃO LOCAL
-USER_FILE = "users.json"
-
-def load_users():
-    if os.path.exists(USER_FILE):
-        with open(USER_FILE, "r") as f:
-            return json.load(f)
-    return {}
-
-def save_users(users):
-    with open(USER_FILE, "w") as f:
-        json.dump(users, f)
-
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
 
 # FUNÇÕES DE MERCADO
 def get_google_trends():
@@ -57,7 +30,21 @@ def get_google_trends():
     return pd.DataFrame()
 
 def get_amazon_trends():
-    # Simulação de API
+    try:
+        response = requests.get(f"{SALES_API_URL}/trends", params={"source": "amazon"})
+        if response.status_code == 200:
+            trends = response.json()
+            return [
+                {
+                    "produto": t["product_name"],
+                    "categoria": t["category"],
+                    "crescimento": t["growth_percentage"]
+                }
+                for t in trends
+            ]
+    except Exception as e:
+        print(f"Erro ao consultar tendências da Amazon: {e}")
+    # Fallback para simulação
     trends = [
         {"produto": "Smartwatch", "categoria": "Tecnologia", "crescimento": "+45%"},
         {"produto": "Fones Bluetooth", "categoria": "Eletrônicos", "crescimento": "+37%"},
@@ -75,12 +62,16 @@ def login():
     if request.method == 'POST':
         user = request.form['user']
         password = request.form['password']
-        users = load_users()
-        if user in users and users[user] == hash_password(password):
-            session['user'] = user
-            return redirect(url_for('dashboard'))
-        else:
-            flash("Usuário ou senha incorretos.")
+        try:
+            response = requests.post(f"{SALES_API_URL}/users/login", params={"username": user, "password": password})
+            data = response.json()
+            if response.status_code == 200 and data.get("success"):
+                session['user'] = user
+                return redirect(url_for('dashboard'))
+            else:
+                flash(data.get("detail", "Erro ao fazer login."))
+        except Exception as e:
+            flash(f"Erro de conexão: {e}")
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -88,14 +79,16 @@ def register():
     if request.method == 'POST':
         user = request.form['user']
         password = request.form['password']
-        users = load_users()
-        if user in users:
-            flash("Usuário já existe.")
-        else:
-            users[user] = hash_password(password)
-            save_users(users)
-            flash("Cadastro realizado com sucesso!")
-            return redirect(url_for('login'))
+        try:
+            response = requests.post(f"{SALES_API_URL}/users/register", params={"username": user, "password": password})
+            data = response.json()
+            if response.status_code == 200 and data.get("success"):
+                flash("Cadastro realizado com sucesso!")
+                return redirect(url_for('login'))
+            else:
+                flash(data.get("detail", "Erro ao registrar usuário."))
+        except Exception as e:
+            flash(f"Erro de conexão: {e}")
     return render_template('register.html')
 
 @app.route('/dashboard', methods=['GET', 'POST'])
