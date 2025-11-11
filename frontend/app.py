@@ -5,13 +5,14 @@ import plotly.graph_objects as go
 from datetime import datetime
 import random
 from pytrends.request import TrendReq
+import os
 
 app = Flask(__name__)
 app.secret_key = '1910'
 
 # CONFIGURAÇÃO DAS APIS
-PREDICT_API_URL = "http://localhost:8001"
-SALES_API_URL = "http://localhost:8000"
+PREDICT_API_URL = os.getenv("PREDICT_API_URL", "http://localhost:8001")
+SALES_API_URL = os.getenv("SALES_API_URL", "http://localhost:8000")
 
 # CONFIGURAÇÃO GOOGLE TRENDS
 pytrends = TrendReq(hl='pt-BR', tz=180)

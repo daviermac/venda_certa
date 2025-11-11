@@ -1,8 +1,5 @@
 fastapi
 uvicorn[standard]
-sqlalchemy
-pymysql
-cryptography
 flask
 prophet
 httpx
@@ -13,3 +10,5 @@ pytrends
 boto3
 bcrypt
 plotly
+pymongo[srv]
+motor

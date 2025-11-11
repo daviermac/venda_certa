@@ -1,20 +1,17 @@
 from fastapi import FastAPI, HTTPException, Query
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import MongoClient
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from database.models import Forecast
+from database.models_mongo import async_db, forecast_helper
+
+forecasts_collection = async_db.forecasts
 import httpx
 import json
 from prophet import Prophet
 from datetime import datetime, timedelta
 import pandas as pd
-
-DATABASE_URL = "mysql+pymysql://root:1910@localhost/venda_certa"
-
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI(title="Predict API")
 
@@ -90,27 +87,22 @@ async def predict(
     future = model.make_future_dataframe(periods=periods)
     forecast = model.predict(future)
 
-    # Salvar previsões no banco
-    session = SessionLocal()
+    # Salvar previsões no MongoDB
     try:
         for _, row in forecast.iterrows():
             if row['ds'].date() > end_date:
-                pred = Forecast(
-                    scope=scope,
-                    scope_id=scope_id,
-                    date=row['ds'].date(),
-                    predicted_value=row['yhat'],
-                    lower_bound=row['yhat_lower'],
-                    upper_bound=row['yhat_upper'],
-                    model_metadata=json.dumps({'model': 'Prophet'})
-                )
-                session.add(pred)
-        session.commit()
+                pred = {
+                    "scope": scope,
+                    "scope_id": scope_id,
+                    "date": datetime.combine(row['ds'].date(), datetime.min.time()),
+                    "predicted_value": row['yhat'],
+                    "lower_bound": row['yhat_lower'],
+                    "upper_bound": row['yhat_upper'],
+                    "model_metadata": json.dumps({'model': 'Prophet'})
+                }
+                await forecasts_collection.insert_one(pred)
     except Exception as e:
-        session.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao salvar previsões: {str(e)}")
-    finally:
-        session.close()
 
     # Retornar últimas previsões
     predictions = forecast[forecast['ds'] > pd.to_datetime(end_date)].to_dict('records')
@@ -134,28 +126,28 @@ async def recommendation(
     scope_id: str = Query(None),
     periods: int = Query(30)
 ):
-    # Buscar previsões recentes
-    session = SessionLocal()
-    try:
-        query = session.query(Forecast).filter(Forecast.scope == scope)
-        if scope_id:
-            query = query.filter(Forecast.scope_id == scope_id)
-        forecasts = query.order_by(Forecast.date.desc()).limit(periods).all()
+    # Buscar previsões recentes no MongoDB
+    query = {"scope": scope}
+    if scope_id:
+        query["scope_id"] = scope_id
 
-        if not forecasts:
-            raise HTTPException(status_code=404, detail="Nenhuma previsão encontrada")
+    cursor = forecasts_collection.find(query).sort("date", -1).limit(periods)
+    forecasts = []
+    async for forecast in cursor:
+        forecasts.append(forecast_helper(forecast))
 
-        # Calcular recomendação de estoque (exemplo simples: média prevista * margem)
-        total_predicted = sum(f.predicted_value for f in forecasts)
-        avg_predicted = total_predicted / len(forecasts)
-        margin = 1.2  # 20% margem
-        recommended_stock = int(avg_predicted * margin)
+    if not forecasts:
+        raise HTTPException(status_code=404, detail="Nenhuma previsão encontrada")
 
-        return {
-            "scope": scope,
-            "scope_id": scope_id,
-            "average_predicted": avg_predicted,
-            "recommended_stock": recommended_stock
-        }
-    finally:
-        session.close()
+    # Calcular recomendação de estoque (exemplo simples: média prevista * margem)
+    total_predicted = sum(f["predicted_value"] for f in forecasts)
+    avg_predicted = total_predicted / len(forecasts)
+    margin = 1.2  # 20% margem
+    recommended_stock = int(avg_predicted * margin)
+
+    return {
+        "scope": scope,
+        "scope_id": scope_id,
+        "average_predicted": avg_predicted,
+        "recommended_stock": recommended_stock
+    }
