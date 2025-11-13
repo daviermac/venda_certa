@@ -126,68 +126,16 @@ def dashboard():
         elif scope == 'product' and product:
             params["scope_id"] = product_options.get(product)
 
-        try:
-            response = requests.get(f"{PREDICT_API_URL}/predict", params=params)
-            if response.status_code == 200:
-                data = response.json()
+        # Armazenar parâmetros na sessão para a página de previsões
+        session['forecast_params'] = {
+            'scope': scope,
+            'category': category,
+            'product': product,
+            'periods': periods
+        }
 
-                # Dados históricos
-                hist_params = {}
-                if scope == "category":
-                    hist_params["category"] = category
-                elif scope == "product":
-                    hist_params["product_id"] = product_options.get(product)
-
-                hist_response = requests.get(f"{SALES_API_URL}/sales/aggregate", params={**hist_params, "group_by": scope if scope != "total" else "total", "period": "daily"})
-                hist_data = []
-                if hist_response.status_code == 200:
-                    hist_data = hist_response.json()
-
-                hist_df = pd.DataFrame(hist_data)
-                if not hist_df.empty:
-                    hist_df['date'] = pd.to_datetime(hist_df['date'] if 'date' in hist_df else hist_df['month'])
-                    hist_df = hist_df.rename(columns={'total_quantity': 'quantity'})
-
-                pred_df = pd.DataFrame(data['predictions'])
-                if 'date' in pred_df.columns:
-                    pred_df['date'] = pd.to_datetime(pred_df['date'])
-                else:
-                    pred_df['date'] = pd.to_datetime(pred_df['ds'])
-
-                fig = go.Figure()
-                if not hist_df.empty:
-                    fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Histórico'))
-                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão'))
-                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['lower_bound'], fill=None, mode='lines', line_color='lightblue', name='Limite Inferior'))
-                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['upper_bound'], fill='tonexty', mode='lines', line_color='lightblue', name='Limite Superior'))
-
-                graph_html = fig.to_html(full_html=False)
-
-                # Recomendações
-                rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
-                if rec_response.status_code == 200:
-                    rec_data = rec_response.json()
-                else:
-                    flash("Erro ao carregar recomendações.")
-
-                # Armazenar dados na sessão para redirecionar
-                session['forecast_data'] = {
-                    'scope': scope,
-                    'category': category,
-                    'product': product,
-                    'periods': periods,
-                    'graph_html': graph_html,
-                    'rec_data': rec_data,
-                    'predictions': data['predictions'],
-                    'hist_data': hist_data
-                }
-
-                # Redirecionar para a página de previsões
-                return redirect(url_for('predictions'))
-            else:
-                flash("Erro ao gerar previsão.")
-        except Exception as e:
-            flash(f"Erro de conexão: {e}")
+        # Redirecionar para a página de previsões
+        return redirect(url_for('predictions'))
 
     if request.method == 'POST' and 'generate' in request.form:
         params = {"scope": scope, "periods": periods}
@@ -237,6 +185,13 @@ def dashboard():
                 rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
                 if rec_response.status_code == 200:
                     rec_data = rec_response.json()
+                    # Formatar dados para o template
+                    rec_data = [{
+                        'date': datetime.now().strftime('%Y-%m-%d'),
+                        'predicted_quantity': rec_data.get('average_predicted', 0),
+                        'recommended_stock': rec_data.get('recommended_stock', 0),
+                        'action': 'comprar' if rec_data.get('recommended_stock', 0) > 0 else 'manter'
+                    }]
                 else:
                     flash("Erro ao carregar recomendações.")
 
@@ -252,43 +207,105 @@ def predictions():
     if 'user' not in session:
         return redirect(url_for('login'))
 
-    # Verificar se há dados na sessão (de uma geração anterior)
-    if 'forecast_data' in session and request.method == 'GET':
-        forecast_data = session['forecast_data']
-        scope = forecast_data['scope']
-        category = forecast_data['category']
-        product = forecast_data['product']
-        periods = forecast_data['periods']
-        graph_html = forecast_data['graph_html']
-        rec_data = forecast_data['rec_data']
-        predictions = forecast_data['predictions']
-        hist_data = forecast_data['hist_data']
+    # Verificar se há parâmetros na sessão (de uma geração anterior)
+    if 'forecast_params' in session and request.method == 'GET':
+        forecast_params = session['forecast_params']
+        scope = forecast_params['scope']
+        category = forecast_params['category']
+        product = forecast_params['product']
+        periods = forecast_params['periods']
 
-        # Determinar título
+        # Limpar sessão após usar
+        session.pop('forecast_params', None)
+
+        # Carregar categorias e produtos
+        product_options = {}
+        try:
+            response = requests.get(f"{SALES_API_URL}/products")
+            if response.status_code == 200:
+                products = response.json()
+                product_options = {p['name']: p['id'] for p in products}
+        except Exception as e:
+            flash(f"Erro ao carregar dados: {e}")
+            return redirect(url_for('dashboard'))
+
+        params = {"scope": scope, "periods": periods}
         if scope == 'category' and category:
+            params["scope_id"] = category
             scope_title = f"Categoria: {category}"
         elif scope == 'product' and product:
+            params["scope_id"] = product_options.get(product)
             scope_title = f"Produto: {product}"
         else:
             scope_title = "Total de Vendas"
 
-        avg_predicted = rec_data.get('average_predicted', 0) if rec_data else 0
-        recommended_stock = rec_data.get('recommended_stock', 0) if rec_data else 0
+        try:
+            # Gerar previsão
+            response = requests.get(f"{PREDICT_API_URL}/predict", params=params)
+            if response.status_code != 200:
+                flash("Erro ao gerar previsão.")
+                return redirect(url_for('dashboard'))
 
-        # Tendências
-        google_trends = get_google_trends()
-        amazon_trends = get_amazon_trends()
+            data = response.json()
+            predictions = data['predictions']
 
-        return render_template('predictions.html',
-                             user=session['user'],
-                             scope_title=scope_title,
-                             periods=periods,
-                             predictions=predictions,
-                             graph_html=graph_html,
-                             avg_predicted=avg_predicted,
-                             recommended_stock=recommended_stock,
-                             google_trends=google_trends,
-                             amazon_trends=amazon_trends)
+            # Dados históricos para gráfico
+            hist_params = {}
+            if scope == "category":
+                hist_params["category"] = category
+            elif scope == "product":
+                hist_params["product_id"] = product_options.get(product)
+
+            hist_response = requests.get(f"{SALES_API_URL}/sales/aggregate", params={**hist_params, "group_by": scope if scope != "total" else "total", "period": "daily"})
+            hist_data = []
+            if hist_response.status_code == 200:
+                hist_data = hist_response.json()
+
+            hist_df = pd.DataFrame(hist_data)
+            if not hist_df.empty:
+                hist_df['date'] = pd.to_datetime(hist_df['date'] if 'date' in hist_df else hist_df['month'])
+                hist_df = hist_df.rename(columns={'total_quantity': 'quantity'})
+
+            pred_df = pd.DataFrame(predictions)
+            pred_df['date'] = pd.to_datetime(pred_df['date'])
+
+            # Criar gráfico
+            fig = go.Figure()
+            if not hist_df.empty:
+                fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Histórico'))
+            fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão'))
+            fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['lower_bound'], fill=None, mode='lines', line_color='lightblue', name='Limite Inferior'))
+            fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['upper_bound'], fill='tonexty', mode='lines', line_color='lightblue', name='Limite Superior'))
+
+            graph_html = fig.to_html(full_html=False)
+
+            # Recomendações
+            rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
+            rec_data = {}
+            if rec_response.status_code == 200:
+                rec_data = rec_response.json()
+
+            avg_predicted = rec_data.get('average_predicted', 0)
+            recommended_stock = rec_data.get('recommended_stock', 0)
+
+            # Tendências
+            google_trends = get_google_trends()
+            amazon_trends = get_amazon_trends()
+
+            return render_template('predictions.html',
+                                 user=session['user'],
+                                 scope_title=scope_title,
+                                 periods=periods,
+                                 predictions=predictions,
+                                 graph_html=graph_html,
+                                 avg_predicted=avg_predicted,
+                                 recommended_stock=recommended_stock,
+                                 google_trends=google_trends,
+                                 amazon_trends=amazon_trends)
+
+        except Exception as e:
+            flash(f"Erro de conexão: {e}")
+            return redirect(url_for('dashboard'))
 
     # Se não há dados na sessão ou é POST, processar normalmente
     scope = request.form.get('scope')

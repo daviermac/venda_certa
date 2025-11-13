@@ -114,8 +114,8 @@
                         {% for rec in rec_data %}
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.date }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.predicted_quantity | round(0) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.recommended_stock | round(0) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.predicted_quantity | default(0) | round(0) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.recommended_stock | default(0) | round(0) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if rec.action == 'comprar' %}
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Comprar</span>

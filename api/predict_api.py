@@ -25,15 +25,30 @@ async def get_holidays(year: int):
             return [datetime.strptime(h['date'], '%Y-%m-%d').date() for h in holidays]
         return []
 
-def prepare_data(sales_data, scope, scope_id=None):
+async def prepare_data(sales_data, scope, scope_id=None):
     df = pd.DataFrame(sales_data)
     df['date'] = pd.to_datetime(df['date'])
+
     if scope == 'total':
         df = df.groupby('date')['quantity'].sum().reset_index()
     elif scope == 'category':
-        df = df[df['category'] == scope_id].groupby('date')['quantity'].sum().reset_index()
+        # Para categoria, precisamos fazer join com produtos para obter a categoria
+        from database.models_mongo import async_db
+        products_collection = async_db.products
+
+        # Buscar produtos da categoria
+        product_ids = []
+        cursor = products_collection.find({"category": scope_id})
+        async for product in cursor:
+            product_ids.append(product["id"])
+
+        if product_ids:
+            df = df[df['product_id'].isin(product_ids)].groupby('date')['quantity'].sum().reset_index()
+        else:
+            df = pd.DataFrame(columns=['date', 'quantity'])
     elif scope == 'product':
         df = df[df['product_id'] == scope_id].groupby('date')['quantity'].sum().reset_index()
+
     df.columns = ['ds', 'y']
     return df
 
@@ -63,15 +78,15 @@ async def predict(
     if scope in ['category', 'product'] and not scope_id:
         raise HTTPException(status_code=400, detail="scope_id necessário para category ou product")
 
-    # Buscar dados históricos
+    # Buscar dados históricos - usar período mais amplo para ter dados suficientes
     end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=365*2)  # Últimos 2 anos
+    start_date = datetime(2021, 1, 1).date()  # Dados desde 2021
     sales_data = await fetch_sales_data(scope, scope_id, start_date, end_date)
 
     if not sales_data:
         raise HTTPException(status_code=404, detail="Nenhum dado histórico encontrado")
 
-    df = prepare_data(sales_data, scope, scope_id)
+    df = await prepare_data(sales_data, scope, scope_id)
 
     # Adicionar feriados
     holidays = []
@@ -89,8 +104,9 @@ async def predict(
 
     # Salvar previsões no MongoDB
     try:
+        last_historical_date = df['ds'].max()
         for _, row in forecast.iterrows():
-            if row['ds'].date() > end_date:
+            if row['ds'] > last_historical_date:
                 pred = {
                     "scope": scope,
                     "scope_id": scope_id,
@@ -104,8 +120,9 @@ async def predict(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao salvar previsões: {str(e)}")
 
-    # Retornar últimas previsões
-    predictions = forecast[forecast['ds'] > pd.to_datetime(end_date)].to_dict('records')
+    # Retornar últimas previsões - usar a última data histórica como referência
+    last_historical_date = df['ds'].max()
+    predictions = forecast[forecast['ds'] > last_historical_date].to_dict('records')
     return {
         "scope": scope,
         "scope_id": scope_id,
@@ -137,7 +154,30 @@ async def recommendation(
         forecasts.append(forecast_helper(forecast))
 
     if not forecasts:
-        raise HTTPException(status_code=404, detail="Nenhuma previsão encontrada")
+        # Fallback: calcular baseado em dados históricos se não houver previsões
+        print("Nenhuma previsão encontrada, calculando baseado em dados históricos...")
+        try:
+            end_date = datetime.now().date()
+            start_date = datetime(2021, 1, 1).date()
+            sales_data = await fetch_sales_data(scope, scope_id, start_date, end_date)
+
+            if sales_data:
+                df = await prepare_data(sales_data, scope, scope_id)
+                avg_historical = df['y'].mean()
+                margin = 1.2  # 20% margem
+                recommended_stock = int(avg_historical * margin)
+
+                return {
+                    "scope": scope,
+                    "scope_id": scope_id,
+                    "average_predicted": avg_historical,
+                    "recommended_stock": recommended_stock,
+                    "source": "historical_data"
+                }
+        except Exception as e:
+            print(f"Erro ao calcular fallback: {e}")
+
+        raise HTTPException(status_code=404, detail="Nenhuma previsão encontrada e falha no cálculo de fallback")
 
     # Calcular recomendação de estoque (exemplo simples: média prevista * margem)
     total_predicted = sum(f["predicted_value"] for f in forecasts)
@@ -149,5 +189,6 @@ async def recommendation(
         "scope": scope,
         "scope_id": scope_id,
         "average_predicted": avg_predicted,
-        "recommended_stock": recommended_stock
+        "recommended_stock": recommended_stock,
+        "source": "forecasts"
     }

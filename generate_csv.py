@@ -78,5 +78,5 @@ def save_to_csv(data, filename='docs/dataset_exemplo.csv'):
     print(f"Arquivo {filename} gerado com {len(data)} linhas.")
 
 if __name__ == "__main__":
-    data = generate_csv_data(3000)
-    save_to_csv(data)
+    data = generate_csv_data(1000000)  # Gerar 1 milhão de linhas
+    save_to_csv(data, 'docs/dataset_exemplo_1m.csv')
