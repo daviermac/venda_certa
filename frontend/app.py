@@ -14,12 +14,11 @@ app.secret_key = '1910'
 PREDICT_API_URL = os.getenv("PREDICT_API_URL", "http://localhost:8001")
 SALES_API_URL = os.getenv("SALES_API_URL", "http://localhost:8000")
 
-# CONFIGURAÇÃO GOOGLE TRENDS
-pytrends = TrendReq(hl='pt-BR', tz=180)
-
 # FUNÇÕES DE MERCADO
 def get_google_trends():
     try:
+        from pytrends.request import TrendReq
+        pytrends = TrendReq(hl='pt-BR', tz=180)
         pytrends.build_payload(kw_list=["compras online", "promoções", "ofertas", "produtos em alta"], cat=0, timeframe='today 1-m', geo='BR', gprop='')
         data = pytrends.interest_over_time()
         if not data.empty:
@@ -207,6 +206,8 @@ def predictions():
     if 'user' not in session:
         return redirect(url_for('login'))
 
+    print(f"DEBUG: Rota predictions chamada com method={request.method}")
+
     # Verificar se há parâmetros na sessão (de uma geração anterior)
     if 'forecast_params' in session and request.method == 'GET':
         forecast_params = session['forecast_params']
@@ -214,6 +215,8 @@ def predictions():
         category = forecast_params['category']
         product = forecast_params['product']
         periods = forecast_params['periods']
+
+        print(f"DEBUG: Usando parâmetros da sessão: scope={scope}, category={category}, product={product}, periods={periods}")
 
         # Limpar sessão após usar
         session.pop('forecast_params', None)
@@ -241,13 +244,16 @@ def predictions():
 
         try:
             # Gerar previsão
+            print(f"DEBUG: Fazendo requisição para {PREDICT_API_URL}/predict com params: {params}")
             response = requests.get(f"{PREDICT_API_URL}/predict", params=params)
+            print(f"DEBUG: Resposta da API predict: status={response.status_code}")
             if response.status_code != 200:
                 flash("Erro ao gerar previsão.")
                 return redirect(url_for('dashboard'))
 
             data = response.json()
             predictions = data['predictions']
+            print(f"DEBUG: Recebidos {len(predictions)} predictions")
 
             # Dados históricos para gráfico
             hist_params = {}
@@ -267,17 +273,11 @@ def predictions():
                 hist_df = hist_df.rename(columns={'total_quantity': 'quantity'})
 
             pred_df = pd.DataFrame(predictions)
-            pred_df['date'] = pd.to_datetime(pred_df['date'])
-
-            # Criar gráfico
-            fig = go.Figure()
-            if not hist_df.empty:
-                fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Histórico'))
-            fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão'))
-            fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['lower_bound'], fill=None, mode='lines', line_color='lightblue', name='Limite Inferior'))
-            fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['upper_bound'], fill='tonexty', mode='lines', line_color='lightblue', name='Limite Superior'))
-
-            graph_html = fig.to_html(full_html=False)
+            if 'date' in pred_df.columns:
+                pred_df['date'] = pd.to_datetime(pred_df['date'])
+            else:
+                pred_df['date'] = pd.to_datetime(pred_df['ds'])
+                pred_df = pred_df.drop(columns=['ds'])
 
             # Recomendações
             rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
@@ -288,16 +288,48 @@ def predictions():
             avg_predicted = rec_data.get('average_predicted', 0)
             recommended_stock = rec_data.get('recommended_stock', 0)
 
+            # Adicionar recommended_stock ao pred_df
+            pred_df['recommended_stock'] = recommended_stock
+
+            # Atualizar a lista predictions com as datas corrigidas
+            predictions = pred_df.to_dict('records')
+
+            # Criar gráfico histórico
+            hist_fig = go.Figure()
+            if not hist_df.empty:
+                hist_fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Vendas Históricas', line_color='blue'))
+                hist_fig.update_layout(title='Histórico de Vendas', xaxis_title='Data', yaxis_title='Quantidade Vendida')
+
+            historical_graph_html = hist_fig.to_html(full_html=False)
+
+            # Criar gráfico de previsão
+            forecast_fig = go.Figure()
+            forecast_fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão', line_color='orange'))
+            forecast_fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['recommended_stock'], mode='lines', name='Estoque Recomendado', line_color='green', line_dash='dash'))
+            forecast_fig.update_layout(title='Previsão de Vendas com Estoque Recomendado', xaxis_title='Data', yaxis_title='Quantidade')
+
+            forecast_graph_html = forecast_fig.to_html(full_html=False)
+
             # Tendências
-            google_trends = get_google_trends()
-            amazon_trends = get_amazon_trends()
+            try:
+                google_trends = get_google_trends()
+            except Exception as e:
+                print(f"Erro ao carregar Google Trends: {e}")
+                google_trends = pd.DataFrame()
+
+            try:
+                amazon_trends = get_amazon_trends()
+            except Exception as e:
+                print(f"Erro ao carregar Amazon Trends: {e}")
+                amazon_trends = []
 
             return render_template('predictions.html',
                                  user=session['user'],
                                  scope_title=scope_title,
                                  periods=periods,
                                  predictions=predictions,
-                                 graph_html=graph_html,
+                                 historical_graph_html=historical_graph_html,
+                                 forecast_graph_html=forecast_graph_html,
                                  avg_predicted=avg_predicted,
                                  recommended_stock=recommended_stock,
                                  google_trends=google_trends,
@@ -364,15 +396,24 @@ def predictions():
         pred_df = pd.DataFrame(predictions)
         pred_df['date'] = pd.to_datetime(pred_df['date'])
 
-        # Criar gráfico
-        fig = go.Figure()
-        if not hist_df.empty:
-            fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Histórico'))
-        fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão'))
-        fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['lower_bound'], fill=None, mode='lines', line_color='lightblue', name='Limite Inferior'))
-        fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['upper_bound'], fill='tonexty', mode='lines', line_color='lightblue', name='Limite Superior'))
+        # Adicionar recommended_stock ao pred_df
+        pred_df['recommended_stock'] = recommended_stock
 
-        graph_html = fig.to_html(full_html=False)
+        # Criar gráfico histórico
+        hist_fig = go.Figure()
+        if not hist_df.empty:
+            hist_fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Vendas Históricas', line_color='blue'))
+            hist_fig.update_layout(title='Histórico de Vendas', xaxis_title='Data', yaxis_title='Quantidade Vendida')
+
+        historical_graph_html = hist_fig.to_html(full_html=False)
+
+        # Criar gráfico de previsão
+        forecast_fig = go.Figure()
+        forecast_fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão', line_color='orange'))
+        forecast_fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['recommended_stock'], mode='lines', name='Estoque Recomendado', line_color='green', line_dash='dash'))
+        forecast_fig.update_layout(title='Previsão de Vendas com Estoque Recomendado', xaxis_title='Data', yaxis_title='Quantidade')
+
+        forecast_graph_html = forecast_fig.to_html(full_html=False)
 
         # Recomendações
         rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
@@ -392,7 +433,8 @@ def predictions():
                              scope_title=scope_title,
                              periods=periods,
                              predictions=predictions,
-                             graph_html=graph_html,
+                             historical_graph_html=historical_graph_html,
+                             forecast_graph_html=forecast_graph_html,
                              avg_predicted=avg_predicted,
                              recommended_stock=recommended_stock,
                              google_trends=google_trends,

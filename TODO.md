@@ -1,0 +1,3 @@
+- [x] Corrigir previsões por produto (funcionando agora)
+- [x] Separar gráficos: histórico e previsão em seções distintas
+- [x] Simplificar tabela de previsões detalhadas
