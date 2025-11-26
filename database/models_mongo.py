@@ -4,9 +4,6 @@ from datetime import datetime
 from bson import ObjectId
 import os
 
-# Connection string do MongoDB Atlas
-MONGODB_URL = "mongodb+srv://davi:reidavi22@vendacerta.jocn1d6.mongodb.net/?appName=vendacerta"
-
 # Cliente síncrono para operações normais
 client = MongoClient(MONGODB_URL)
 db = client.venda_certa
