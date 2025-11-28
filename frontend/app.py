@@ -141,7 +141,7 @@ def dashboard():
         if scope == 'category' and category:
             params["scope_id"] = category
         elif scope == 'product' and product:
-            params["scope_id"] = product_options.get(product)
+            params["scope_id"] = product
 
         try:
             response = requests.get(f"{PREDICT_API_URL}/predict", params=params)
@@ -396,6 +396,15 @@ def predictions():
         pred_df = pd.DataFrame(predictions)
         pred_df['date'] = pd.to_datetime(pred_df['date'])
 
+        # Recomendações
+        rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
+        rec_data = {}
+        if rec_response.status_code == 200:
+            rec_data = rec_response.json()
+
+        avg_predicted = rec_data.get('average_predicted', 0)
+        recommended_stock = rec_data.get('recommended_stock', 0)
+
         # Adicionar recommended_stock ao pred_df
         pred_df['recommended_stock'] = recommended_stock
 
@@ -414,15 +423,6 @@ def predictions():
         forecast_fig.update_layout(title='Previsão de Vendas com Estoque Recomendado', xaxis_title='Data', yaxis_title='Quantidade')
 
         forecast_graph_html = forecast_fig.to_html(full_html=False)
-
-        # Recomendações
-        rec_response = requests.get(f"{PREDICT_API_URL}/recommendation", params=params)
-        rec_data = {}
-        if rec_response.status_code == 200:
-            rec_data = rec_response.json()
-
-        avg_predicted = rec_data.get('average_predicted', 0)
-        recommended_stock = rec_data.get('recommended_stock', 0)
 
         # Tendências
         google_trends = get_google_trends()
