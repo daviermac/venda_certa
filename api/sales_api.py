@@ -106,7 +106,8 @@ async def sales_aggregate(
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
     group_by: str = Query("total", regex="^(total|category|product)$"),
-    period: str = Query("daily", regex="^(daily|monthly)$")
+    period: str = Query("daily", regex="^(daily|monthly)$"),
+    product_id: Optional[str] = Query(None)
 ):
     # Construir pipeline de agregação do MongoDB
     match_stage = {}
@@ -114,6 +115,11 @@ async def sales_aggregate(
         match_stage["date"] = {"$gte": datetime.combine(start_date, datetime.min.time())}
     if end_date:
         match_stage["date"] = {**match_stage.get("date", {}), "$lte": datetime.combine(end_date, datetime.min.time())}
+    if product_id:
+        match_stage["product_id"] = product_id
+    if category:
+        # Para categoria, precisamos fazer lookup primeiro
+        pass  # será tratado no pipeline
 
     pipeline = []
     if match_stage:
@@ -155,6 +161,9 @@ async def sales_aggregate(
             results = await sales_collection.aggregate(pipeline).to_list(None)
             return [{"month": r["_id"]["month"], "category": r["_id"]["category"], "total_quantity": r["total_quantity"]} for r in results]
     elif group_by == "product":
+        if product_id:
+            # Filtrar por produto específico
+            pipeline.append({"$match": {"product_id": product_id}})
         if period == "daily":
             pipeline.extend([
                 {"$group": {"_id": {"date": {"$dateToString": {"format": "%Y-%m-%d", "date": "$date"}}, "product_id": "$product_id"}, "total_quantity": {"$sum": "$quantity"}}},

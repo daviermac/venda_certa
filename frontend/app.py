@@ -130,6 +130,7 @@ def dashboard():
             'scope': scope,
             'category': category,
             'product': product,
+            'product_id': product_options.get(product) if scope == 'product' and product else None,
             'periods': periods
         }
 
@@ -194,6 +195,20 @@ def dashboard():
                 else:
                     flash("Erro ao carregar recomendações.")
 
+                # Armazenar dados da geração para reutilização na página de previsões
+                session['prediction_data'] = {
+                    'predictions': data['predictions'],
+                    'historical_data': hist_data,
+                    'scope': scope,
+                    'scope_id': params.get('scope_id'),
+                    'periods': periods,
+                    'avg_predicted': rec_data[0]['predicted_quantity'] if rec_data else 0,
+                    'recommended_stock': rec_data[0]['recommended_stock'] if rec_data else 0,
+                    'scope_title': f"Categoria: {category}" if scope == 'category' and category else f"Produto: {product}" if scope == 'product' and product else "Total de Vendas"
+                }
+
+                flash("Previsão gerada com sucesso! Clique em 'Ver Previsões' para visualizar os resultados.")
+
             else:
                 flash("Erro ao gerar previsão.")
         except Exception as e:
@@ -214,20 +229,21 @@ def predictions():
         scope = forecast_params['scope']
         category = forecast_params['category']
         product = forecast_params['product']
+        product_id = forecast_params.get('product_id')
         periods = forecast_params['periods']
 
-        print(f"DEBUG: Usando parâmetros da sessão: scope={scope}, category={category}, product={product}, periods={periods}")
+        print(f"DEBUG: Usando parâmetros da sessão: scope={scope}, category={category}, product={product}, product_id={product_id}, periods={periods}")
 
         # Limpar sessão após usar
         session.pop('forecast_params', None)
 
-        # Carregar categorias e produtos
-        product_options = {}
+        # Carregar categorias e produtos para nomes
+        product_names = {}
         try:
             response = requests.get(f"{SALES_API_URL}/products")
             if response.status_code == 200:
                 products = response.json()
-                product_options = {p['name']: p['id'] for p in products}
+                product_names = {p['id']: p['name'] for p in products}
         except Exception as e:
             flash(f"Erro ao carregar dados: {e}")
             return redirect(url_for('dashboard'))
@@ -236,9 +252,9 @@ def predictions():
         if scope == 'category' and category:
             params["scope_id"] = category
             scope_title = f"Categoria: {category}"
-        elif scope == 'product' and product:
-            params["scope_id"] = product_options.get(product)
-            scope_title = f"Produto: {product}"
+        elif scope == 'product' and product_id:
+            params["scope_id"] = product_id
+            scope_title = f"Produto: {product_names.get(product_id, product_id)}"
         else:
             scope_title = "Total de Vendas"
 
@@ -260,7 +276,7 @@ def predictions():
             if scope == "category":
                 hist_params["category"] = category
             elif scope == "product":
-                hist_params["product_id"] = product_options.get(product)
+                hist_params["product_id"] = product_id
 
             hist_response = requests.get(f"{SALES_API_URL}/sales/aggregate", params={**hist_params, "group_by": scope if scope != "total" else "total", "period": "daily"})
             hist_data = []

@@ -5,6 +5,7 @@ from bson import ObjectId
 import os
 
 # Cliente síncrono para operações normais
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb+srv://davi:reidavi22@vendacerta.jocn1d6.mongodb.net/?appName=vendacerta")
 client = MongoClient(MONGODB_URL)
 db = client.venda_certa
 
