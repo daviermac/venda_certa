@@ -98,37 +98,36 @@ async def predict(
     model = Prophet(holidays=pd.DataFrame(holidays))
     model.fit(df)
 
-    # Fazer previsão
-    future = model.make_future_dataframe(periods=periods)
+    # Fazer previsão a partir da data atual
+    current_date = datetime.now().date()
+    future_dates = pd.date_range(start=current_date, periods=periods, freq='D')
+    future = pd.DataFrame({'ds': future_dates})
     forecast = model.predict(future)
 
     # Salvar previsões no MongoDB
     try:
-        last_historical_date = df['ds'].max()
         for _, row in forecast.iterrows():
-            if row['ds'] > last_historical_date:
-                pred = {
-                    "scope": scope,
-                    "scope_id": scope_id,
-                    "date": datetime.combine(row['ds'].date(), datetime.min.time()),
-                    "predicted_value": row['yhat'],
-                    "lower_bound": row['yhat_lower'],
-                    "upper_bound": row['yhat_upper'],
-                    "model_metadata": json.dumps({'model': 'Prophet'})
-                }
-                await forecasts_collection.insert_one(pred)
+            pred = {
+                "scope": scope,
+                "scope_id": scope_id,
+                "date": datetime.combine(row['ds'].date(), datetime.min.time()),
+                "predicted_value": row['yhat'],
+                "lower_bound": row['yhat_lower'],
+                "upper_bound": row['yhat_upper'],
+                "model_metadata": json.dumps({'model': 'Prophet'})
+            }
+            await forecasts_collection.insert_one(pred)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao salvar previsões: {str(e)}")
 
-    # Retornar últimas previsões - usar a última data histórica como referência
-    last_historical_date = df['ds'].max()
-    predictions = forecast[forecast['ds'] > last_historical_date].to_dict('records')
+    # Retornar previsões
+    predictions = forecast.to_dict('records')
     return {
         "scope": scope,
         "scope_id": scope_id,
         "predictions": [
             {
-                "date": str(p['ds'].date()),
+                "date": p['ds'].strftime('%Y-%m-%d'),
                 "predicted_value": p['yhat'],
                 "lower_bound": p['yhat_lower'],
                 "upper_bound": p['yhat_upper']
