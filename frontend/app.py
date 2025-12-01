@@ -178,10 +178,15 @@ def dashboard():
 
                 fig = go.Figure()
                 if not hist_df.empty:
-                    fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Histórico'))
-                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['predicted_value'], mode='lines', name='Previsão'))
-                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['lower_bound'], fill=None, mode='lines', line_color='lightblue', name='Limite Inferior'))
-                fig.add_trace(go.Scatter(x=pred_df['date'], y=pred_df['upper_bound'], fill='tonexty', mode='lines', line_color='lightblue', name='Limite Superior'))
+                    fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Histórico', line_color='blue'))
+                    fig.update_layout(title='Histórico de Vendas', xaxis_title='Data', yaxis_title='Quantidade Vendida')
+                else:
+                    # Dados de exemplo se histórico estiver vazio
+                    import numpy as np
+                    dates = pd.date_range(start='2021-01-01', end='2023-12-31', freq='M')
+                    quantities = np.random.randint(50, 200, size=len(dates))
+                    fig.add_trace(go.Scatter(x=dates, y=quantities, mode='lines', name='Histórico (Exemplo)', line_color='blue'))
+                    fig.update_layout(title='Histórico de Vendas (Dados de Exemplo)', xaxis_title='Data', yaxis_title='Quantidade Vendida')
 
                 graph_html = fig.to_html(full_html=False)
 

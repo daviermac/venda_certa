@@ -4,31 +4,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venda Certa - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .hero-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .card-modern {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .card-modern:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            cursor: pointer;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(45deg, #764ba2, #667eea);
+        }
+
+        .form-input {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .table-modern {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .table-modern th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            padding: 1rem;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+        }
+
+        .table-modern td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .badge-success {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b">
+    <header class="hero-header">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center">
-                    <div class="bg-blue-100 p-2 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="bg-white bg-opacity-20 p-3 rounded-xl backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <h1 class="ml-3 text-xl font-semibold text-gray-900">Venda Certa</h1>
+                    <h1 class="ml-4 text-2xl font-bold text-white">Venda Certa</h1>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-700">Olá, {{ user }}!</span>
-                    <a href="{{ url_for('logout') }}" class="text-sm text-blue-600 hover:text-blue-500">Sair</a>
+                <div class="flex items-center space-x-6">
+                    <span class="text-white font-medium">Olá, {{ user }}!</span>
+                    <a href="{{ url_for('logout') }}" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-all duration-300 font-medium">Sair</a>
                 </div>
             </div>
         </div>
@@ -36,37 +196,37 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Formulário de Previsão -->
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Gerar Previsão de Vendas</h2>
-            <form method="POST" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="card-modern p-8 mb-8 fade-in">
+            <h2 class="section-title">Gerar Previsão de Vendas</h2>
+            <form method="POST" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
-                        <label for="scope" class="block text-sm font-medium text-gray-700 mb-1">Escopo</label>
-                        <select id="scope" name="scope" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <label for="scope" class="block text-sm font-medium text-gray-700 mb-2">Escopo</label>
+                        <select id="scope" name="scope" class="form-input w-full">
                             <option value="total">Total de Vendas</option>
                             <option value="category">Por Categoria</option>
                             <option value="product">Por Produto</option>
                         </select>
                     </div>
                     <div id="category-select" class="hidden">
-                        <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                        <select id="category" name="category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                        <select id="category" name="category" class="form-input w-full">
                             {% for cat in categories %}
                             <option value="{{ cat }}">{{ cat }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div id="product-select" class="hidden">
-                        <label for="product" class="block text-sm font-medium text-gray-700 mb-1">Produto</label>
-                        <select id="product" name="product" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <label for="product" class="block text-sm font-medium text-gray-700 mb-2">Produto</label>
+                        <select id="product" name="product" class="form-input w-full">
                             {% for name, id in product_options.items() %}
                             <option value="{{ id }}">{{ name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div>
-                        <label for="periods" class="block text-sm font-medium text-gray-700 mb-1">Período</label>
-                        <select id="periods" name="periods" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        <label for="periods" class="block text-sm font-medium text-gray-700 mb-2">Período</label>
+                        <select id="periods" name="periods" class="form-input w-full" required>
                             <option value="7" {% if periods == 7 %}selected{% endif %}>Próximos 7 dias</option>
                             <option value="15" {% if periods == 15 %}selected{% endif %}>Próximos 15 dias</option>
                             <option value="30" {% if periods == 30 or not periods %}selected{% endif %}>Próximo mês (30 dias)</option>
@@ -76,14 +236,14 @@
                         </select>
                     </div>
                 </div>
-                <div class="flex space-x-4">
-                    <button type="submit" name="generate" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button type="submit" name="generate" class="btn-gradient inline-flex items-center justify-center px-6 py-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                         Gerar Previsão
                     </button>
-                    <button type="submit" name="view_predictions" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <button type="submit" name="view_predictions" class="btn-secondary inline-flex items-center justify-center px-6 py-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
@@ -95,9 +255,9 @@
 
         <!-- Gráfico -->
         {% if graph_html %}
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Histórico vs Previsão</h2>
-            <div class="w-full">
+        <div class="card-modern p-8 mb-8 fade-in">
+            <h2 class="section-title">Histórico vs Previsão</h2>
+            <div class="w-full bg-gray-50 rounded-lg p-4">
                 {{ graph_html | safe }}
             </div>
         </div>
@@ -105,31 +265,31 @@
 
         <!-- Recomendações de Estoque -->
         {% if rec_data %}
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Recomendações de Estoque</h2>
+        <div class="card-modern p-8 mb-8 fade-in">
+            <h2 class="section-title">Recomendações de Estoque</h2>
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="table-modern w-full">
+                    <thead>
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade Prevista</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estoque Recomendado</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
+                            <th>Data</th>
+                            <th>Quantidade Prevista</th>
+                            <th>Estoque Recomendado</th>
+                            <th>Ação</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white">
                         {% for rec in rec_data %}
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.date }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.predicted_quantity | default(0) | round(0) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ rec.recommended_stock | default(0) | round(0) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="text-sm text-gray-900">{{ rec.date }}</td>
+                            <td class="text-sm text-gray-900">{{ rec.predicted_quantity | default(0) | round(0) }}</td>
+                            <td class="text-sm text-gray-900">{{ rec.recommended_stock | default(0) | round(0) }}</td>
+                            <td>
                                 {% if rec.action == 'comprar' %}
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Comprar</span>
+                                    <span class="badge-success">Comprar</span>
                                 {% elif rec.action == 'manter' %}
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Manter</span>
+                                    <span class="badge-warning">Manter</span>
                                 {% elif rec.action == 'vender' %}
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Vender</span>
+                                    <span class="badge-danger">Vender</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -141,27 +301,27 @@
         {% endif %}
 
         <!-- Tendências de Mercado -->
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Tendências de Mercado</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="text-md font-medium text-gray-900 mb-2">Google Trends (Pesquisas Online)</h3>
+        <div class="card-modern p-8 fade-in">
+            <h2 class="section-title">Tendências de Mercado</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Google Trends (Pesquisas Online)</h3>
                     <p class="text-sm text-gray-600">Dados simulados de tendências de busca relacionadas a compras online.</p>
                 </div>
-                <div>
-                    <h3 class="text-md font-medium text-gray-900 mb-2">Amazon Trends (Produtos em Alta)</h3>
-                    <div class="space-y-2">
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Amazon Trends (Produtos em Alta)</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
                             <span class="text-sm font-medium text-gray-900">Smartwatch</span>
-                            <span class="ml-auto text-sm text-green-600">+45%</span>
+                            <span class="text-sm font-bold text-green-600">+45%</span>
                         </div>
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
                             <span class="text-sm font-medium text-gray-900">Fones Bluetooth</span>
-                            <span class="ml-auto text-sm text-green-600">+37%</span>
+                            <span class="text-sm font-bold text-green-600">+37%</span>
                         </div>
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
                             <span class="text-sm font-medium text-gray-900">Tênis Esportivo</span>
-                            <span class="ml-auto text-sm text-green-600">+28%</span>
+                            <span class="text-sm font-bold text-green-600">+28%</span>
                         </div>
                     </div>
                 </div>

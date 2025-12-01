@@ -11,25 +11,42 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b">
+    <header class="bg-white shadow-lg border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center">
-                    <div class="bg-blue-100 p-2 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="gradient-bg p-3 rounded-xl shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <h1 class="ml-3 text-xl font-semibold text-gray-900">Venda Certa - Previsões</h1>
+                    <h1 class="ml-4 text-2xl font-bold text-gray-900">Venda Certa - Previsões</h1>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-700">Olá, {{ user }}!</span>
-                    <a href="{{ url_for('dashboard') }}" class="text-sm text-blue-600 hover:text-blue-500">Voltar ao Dashboard</a>
-                    <a href="{{ url_for('logout') }}" class="text-sm text-blue-600 hover:text-blue-500">Sair</a>
+                <div class="flex items-center space-x-6">
+                    <span class="text-sm font-medium text-gray-700">Olá, {{ user }}!</span>
+                    <a href="{{ url_for('dashboard') }}" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">Voltar ao Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="text-sm font-medium text-red-600 hover:text-red-500 transition-colors duration-200">Sair</a>
                 </div>
             </div>
         </div>
@@ -62,15 +79,25 @@
         <!-- Gráficos -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <!-- Gráfico Histórico -->
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Histórico de Vendas</h2>
-                <div id="historical-chart">{{ historical_graph_html|safe }}</div>
+            <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Histórico de Vendas
+                </h2>
+                <div id="historical-chart" class="w-full">{{ historical_graph_html|safe }}</div>
             </div>
 
             <!-- Gráfico de Previsão -->
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Previsão de Vendas</h2>
-                <div id="forecast-chart">{{ forecast_graph_html|safe }}</div>
+            <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Previsão de Vendas
+                </h2>
+                <div id="forecast-chart" class="w-full">{{ forecast_graph_html|safe }}</div>
             </div>
         </div>
 
