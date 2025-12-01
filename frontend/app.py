@@ -103,12 +103,14 @@ def dashboard():
     # Carregar categorias e produtos para os selects
     categories = []
     product_options = {}
+    product_names = {}
     try:
         response = requests.get(f"{SALES_API_URL}/products")
         if response.status_code == 200:
             products = response.json()
             categories = list(set(p['category'] for p in products))
             product_options = {p['name']: p['id'] for p in products}
+            product_names = {p['id']: p['name'] for p in products}
     except Exception as e:
         flash(f"Erro ao carregar dados: {e}")
 
@@ -205,15 +207,22 @@ def dashboard():
                     flash("Erro ao carregar recomendações.")
 
                 # Armazenar dados da geração para reutilização na página de previsões
+                scope_title = "Total de Vendas"
+                if scope == 'category' and category:
+                    scope_title = f"Categoria: {category}"
+                elif scope == 'product' and product:
+                    product_name = product_names.get(product, product)
+                    scope_title = f"Produto: {product_name}"
+
                 session['prediction_data'] = {
                     'predictions': data['predictions'],
                     'historical_data': hist_data,
                     'scope': scope,
                     'scope_id': params.get('scope_id'),
                     'periods': periods,
-                    'avg_predicted': rec_data[0]['predicted_quantity'] if rec_data else 0,
+                    'avg_predicted': int(round(rec_data[0]['predicted_quantity'], 0)) if rec_data else 0,
                     'recommended_stock': rec_data[0]['recommended_stock'] if rec_data else 0,
-                    'scope_title': f"Categoria: {category}" if scope == 'category' and category else f"Produto: {product}" if scope == 'product' and product else "Total de Vendas"
+                    'scope_title': scope_title
                 }
 
                 flash("Previsão gerada com sucesso! Clique em 'Ver Previsões' para visualizar os resultados.")
@@ -272,6 +281,13 @@ def predictions():
         if not hist_df.empty:
             hist_fig.add_trace(go.Scatter(x=hist_df['date'], y=hist_df['quantity'], mode='lines', name='Vendas Históricas', line_color='blue'))
             hist_fig.update_layout(title=f'Histórico de Vendas - {scope_title}', xaxis_title='Data', yaxis_title='Quantidade Vendida')
+        else:
+            # Dados de exemplo se histórico estiver vazio
+            import numpy as np
+            dates = pd.date_range(start='2021-01-01', end='2023-12-31', freq='M')
+            quantities = np.random.randint(50, 200, size=len(dates))
+            hist_fig.add_trace(go.Scatter(x=dates, y=quantities, mode='lines', name='Histórico (Exemplo)', line_color='blue'))
+            hist_fig.update_layout(title=f'Histórico de Vendas (Dados de Exemplo) - {scope_title}', xaxis_title='Data', yaxis_title='Quantidade Vendida')
 
         historical_graph_html = hist_fig.to_html(full_html=False)
 
@@ -322,11 +338,13 @@ def predictions():
 
     # Carregar categorias e produtos
     product_options = {}
+    product_names = {}
     try:
         response = requests.get(f"{SALES_API_URL}/products")
         if response.status_code == 200:
             products = response.json()
             product_options = {p['name']: p['id'] for p in products}
+            product_names = {p['id']: p['name'] for p in products}
     except Exception as e:
         flash(f"Erro ao carregar dados: {e}")
         return redirect(url_for('dashboard'))
@@ -337,7 +355,8 @@ def predictions():
         scope_title = f"Categoria: {category}"
     elif scope == 'product' and product:
         params["scope_id"] = product_options.get(product)
-        scope_title = f"Produto: {product}"
+        product_name = product_names.get(product, product)
+        scope_title = f"Produto: {product_name}"
     else:
         scope_title = "Total de Vendas"
 
@@ -378,7 +397,7 @@ def predictions():
         if rec_response.status_code == 200:
             rec_data = rec_response.json()
 
-        avg_predicted = rec_data.get('average_predicted', 0)
+        avg_predicted = int(round(rec_data.get('average_predicted', 0), 0))
         recommended_stock = rec_data.get('recommended_stock', 0)
 
         # Adicionar recommended_stock ao pred_df
