@@ -55,7 +55,11 @@ def get_amazon_trends():
     random.shuffle(trends)
     return trends[:3]
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if 'user' in session:
         return redirect(url_for('dashboard'))
