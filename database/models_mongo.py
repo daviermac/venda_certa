@@ -24,9 +24,9 @@ holidays_collection = db.holidays
 # Funções helper para conversão de dados
 def product_helper(product) -> dict:
     return {
-        "id": product["id"],
-        "name": product["name"],
-        "category": product["category"],
+        "id": product.get("id", str(product.get("_id", ""))),
+        "name": product.get("name", product.get("product_id", "Produto Desconhecido")),
+        "category": product.get("category", "Geral"),
     }
 
 def sale_helper(sale) -> dict:
